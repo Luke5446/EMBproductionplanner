@@ -93,7 +93,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.4.1';
+const VER='0.5';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -413,7 +413,7 @@ const waitText=l=>(l.wait||[]).map(x=>x.t==='wo'?`WO ${esc(x.ref)}${x.due?' due 
 const TABS=[['orders','Orders'],['actioned','Actioned'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['logos','Logos'],['settings','Settings']];
 function render(){
   const live=JOBS.filter(j=>j.status!=='done');
-  const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready').length,emb:live.filter(j=>!j.machine&&j.pickState==='all').length};
+  const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready'&&j.actioned).length,emb:live.filter(j=>!j.machine&&j.pickState==='all').length};
   document.getElementById('nav').innerHTML=TABS.map(([id,n])=>`<button class="${TAB===id?'on':''}" onclick="go('${id}')">${n}${counts[id]?`<span class="badge">${counts[id]}</span>`:''}</button>`).join('');
   const info=[];if(SOP.ok)info.push('Sage paste '+fdt(SOP.ts));if(OWN.source==='api')info.push('this PC can save');else if(canWrite()&&OWN.err)info.push('GitHub read failed: '+OWN.err);
   document.getElementById('hdrInfo').textContent=info.join(' · ');
@@ -479,7 +479,7 @@ function jobDetail(j){
     if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}')">Save</button>`;
     if(w&&!j.actioned)h+=`<button class="btn btn-green" onclick="actionJob('${esc(j.key)}')" title="Mark actioned as it stands">Mark actioned</button>`;
     if(w&&j.actioned)h+=`<button class="btn btn-grey" onclick="unaction('${esc(j.key)}')">Undo actioned</button>`;
-    h+=`<button class="btn btn-grey" onclick="printJobs(['${esc(j.key)}'])">Print EMB WO</button>`;
+    h+=`<button class="btn btn-grey" onclick="excelWO('${esc(j.key)}')" title="Editable Excel works order in the embroidery form layout, with the logo image where the app has one">EMB WO (Excel)</button>`;
     h+=`<span class="muted">${j.actioned?'Actioned '+fdt(o.actionedAt)+(o.actionedBy?' by '+esc(o.actionedBy):''):'Needs: '+(j.missing.join(', ')||'a Save or Mark actioned')}${j.printed?' · EMB WO printed '+fdt(o.printedAt):''}${j.style?' · logo and placement from the planner record '+esc(j.style.code):''}</span>`;
     if(!w)h+=`<span class="muted">View only: sign in as the sales office to edit.</span>`;
   }else h+=`<span class="muted">Works order ${esc(j.ref)} in the <a href="https://luke5446.github.io/Tibard-Productionplan/" target="_blank">Production Plan</a>; pick and done marks are made there.${j.style?' Logo and placement from its style record.':''}</span>`;
@@ -526,7 +526,7 @@ function who(){let w='';try{w=localStorage.getItem('emb_who')||''}catch(e){}if(!
 
 /* ── pick list (warehouse) ──────────────────────────────────────────────── */
 function renderPick(){
-  const all=applyFilter(JOBS.filter(j=>j.status!=='done'&&!j.machine&&j.pickState!=='all'));
+  const all=applyFilter(JOBS.filter(j=>j.status!=='done'&&!j.machine&&j.pickState!=='all'&&j.actioned));   // only actioned jobs reach the warehouse
   const w=can('pick');
   const ready=all.filter(j=>j.status==='ready'&&j.src==='sage'),picking=all.filter(j=>j.status==='picking'||j.status==='part'),prod=all.filter(j=>j.status==='production'),wait=all.filter(j=>j.status==='waiting');
   const ticked=[...TICK].filter(k=>ready.some(j=>j.key===k));
@@ -543,7 +543,7 @@ function renderPick(){
   ${(!FILTER.tile||FILTER.tile==='picking')?group('Picking','pick list printed, garments being picked',picking,''):''}
   ${(!FILTER.tile||FILTER.tile==='prod')?group('Waiting on a production works order','special makes and planner works orders; pick the rest when it lands',prod,''):''}
   ${(!FILTER.tile||FILTER.tile==='wait')?group('Waiting on stock','back-to-back PO, container or nothing on order',wait,''):''}
-  <div class="status">Stock is served to the oldest promised date first, the Order tracker's rule, with Sage's allocation respected. Printing a pick list puts the job in <b>Picking</b>. Bins come from BinFinder's stock file${BIN.ok?'':' (not read)'}. ${w?'':'View only: sign in as the warehouse to print and mark picks.'}</div>`;
+  <div class="status">Stock is served to the oldest promised date first, the Order tracker's rule, with Sage's allocation respected. Only jobs the sales office has actioned appear here. Printing a pick list puts the job in <b>Picking</b>. Bins come from BinFinder's stock file${BIN.ok?'':' (not read)'}. ${w?'':'View only: sign in as the warehouse to print and mark picks.'}</div>`;
 }
 function tick(k,on){if(on)TICK.add(k);else TICK.delete(k);render()}
 function tickAll(keys){const all=keys.every(k=>TICK.has(k));keys.forEach(k=>all?TICK.delete(k):TICK.add(k));render()}
@@ -643,6 +643,38 @@ function usersCard(){
   return h;
 }
 function saveSet(){if(!can('settings')){alert('Sign in as the EMB manager to change settings.');return}SET={spm:+val('s_spm')||900,setup:+val('s_setup')||10,leadTib:+val('s_lt')||10,leadOH:+val('s_lo')||7};lsSet(LS_SET,SET);build();render()}
+
+/* ── EMB works order as an editable Excel (the embroidery form layout) ──── */
+function loadExcelJS(){return window.ExcelJS?Promise.resolve():new Promise((res,rej)=>{const sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js';sc.onload=res;sc.onerror=()=>rej(new Error('ExcelJS did not load'));document.head.appendChild(sc)})}
+async function excelWO(k){
+  const j=JOBS.find(x=>x.key===k);if(!j)return;
+  try{await loadExcelJS()}catch(e){alert(e.message);return}
+  const wb=new ExcelJS.Workbook();wb.creator='EMB production';const ws=wb.addWorksheet('Emb Orders',{pageSetup:{paperSize:9,orientation:'portrait',fitToPage:true,fitToWidth:1,fitToHeight:0}});
+  ws.columns=[{width:3},{width:20},{width:14},{width:44},{width:48},{width:12}];
+  const navy='FF1F3864',gold='FFC9A24B';
+  const bold=(c,sz)=>{c.font={bold:true,size:sz||11}};
+  const box=c=>{c.border={top:{style:'thin'},left:{style:'thin'},bottom:{style:'thin'},right:{style:'thin'}}};
+  ws.mergeCells('B2:E2');ws.getCell('B2').value=(j.co==='TIBARD'?'Tibard Limited':'Oliver Harvey')+' - '+(j.kind==='EMB'?'EMBROIDERY':'TRANSFER')+' WORKS ORDER';ws.getCell('B2').font={bold:true,size:18,color:{argb:'FFFFFFFF'}};ws.getCell('B2').fill={type:'pattern',pattern:'solid',fgColor:{argb:navy}};ws.getCell('B2').alignment={horizontal:'center'};ws.getRow(2).height=28;
+  const kv=[['Issued by',USER?USER.name:(j.user||''),'Order number',j.src==='sage'?'SO '+j.doc:j.ref],['Date issued',new Date(),'Customer',j.cust],['Date required',j.due,'Customer order ref',j.ref||''],['Promised to customer',j.promised,'Sales person (Sage)',j.user||'']];
+  kv.forEach((r,i)=>{const row=4+i;ws.getCell(row,2).value=r[0];bold(ws.getCell(row,2));ws.getCell(row,3).value=r[1];ws.mergeCells(row,3,row,3);ws.getCell(row,4).value=r[2];bold(ws.getCell(row,4));ws.getCell(row,5).value=r[3];
+    if(r[1] instanceof Date)ws.getCell(row,3).numFmt='dd/mm/yyyy';[2,3,4,5].forEach(c=>box(ws.getCell(row,c)))});
+  ws.getCell('C5').font={color:{argb:'FFC0392B'},bold:true};ws.getCell('C6').font={color:{argb:'FFC0392B'},bold:true};
+  const hr=9;['Product code','Qty','Product description','Special instructions (logo, placement, size, thread)','Bin'].forEach((h,i)=>{const c=ws.getCell(hr,2+i);c.value=h;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:navy}};c.alignment={vertical:'middle',wrapText:true};box(c)});
+  let r=hr+1;
+  j.lines.forEach(l=>{const instr=[j.logo?'Logo: '+j.logo:'',j.place?'Placement: '+j.place:''].concat(l.txt||[]).filter(Boolean).join('\n');
+    const vals=[l.base||l.code,l.out,l.desc,instr,l.bin||''];vals.forEach((v,i)=>{const c=ws.getCell(r,2+i);c.value=v;c.alignment={vertical:'top',wrapText:true};box(c)});bold(ws.getCell(r,2));bold(ws.getCell(r,3),12);
+    const lines=instr.split('\n').reduce((a,t)=>a+Math.max(1,Math.ceil(t.length/44)),0)+1;ws.getRow(r).height=Math.max(30,15*Math.max(lines,Math.ceil((l.desc||'').length/40)+1));r++});
+  r++;const meta=[['Stitch count',j.stitches||''],['Thread colours',j.colours||''],['Est. time (min)',j.minutes||''],['Machine',(MACHINES.find(m=>m.id===j.machine)||{}).name||''],['Notes',j.src==='sage'?j.notes||'':'']];
+  meta.forEach(m=>{ws.getCell(r,2).value=m[0];bold(ws.getCell(r,2));ws.mergeCells(r,3,r,5);ws.getCell(r,3).value=m[1];ws.getCell(r,3).alignment={wrapText:true};[2,3].forEach(c=>box(ws.getCell(r,c)));box(ws.getCell(r,5));r++});
+  r++;ws.getCell(r,2).value='Logo image';bold(ws.getCell(r,2));const imgTop=r;
+  if(j.logoImg&&/^data:image\/(png|jpe?g);base64,/.test(j.logoImg)){const ext=/png/.test(j.logoImg.slice(0,20))?'png':'jpeg';const id=wb.addImage({base64:j.logoImg.split(',')[1],extension:ext});ws.addImage(id,{tl:{col:2,row:imgTop},ext:{width:320,height:220}});r+=13}
+  else{ws.mergeCells(r+1,2,r+10,5);ws.getCell(r+1,2).value='Paste or insert the logo image here';ws.getCell(r+1,2).alignment={horizontal:'center',vertical:'middle'};ws.getCell(r+1,2).font={color:{argb:'FF6B7686'}};box(ws.getCell(r+1,2));r+=12}
+  r++;['Picked by / date','Embroidered by / machine / date','Checked by / date'].forEach((t,i)=>{const c=ws.getCell(r,2+i*1+(i?1:0));});
+  ws.getCell(r,2).value='Picked by / date';ws.getCell(r,4).value='Embroidered by / machine / date';ws.getCell(r,5).value='Checked by / date';[2,4,5].forEach(c=>{bold(ws.getCell(r,c));ws.getCell(r,c).border={top:{style:'medium'}}});
+  ws.getCell(r+2,2).value='Made by the EMB production app v'+VER+' on '+fdt(new Date().toISOString())+'. Edit as needed and upload it back to the job.';ws.getCell(r+2,2).font={italic:true,size:9,color:{argb:'FF6B7686'}};
+  const buf=await wb.xlsx.writeBuffer();const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(j.co==='TIBARD'?'TIB':'OH')+'_'+(j.src==='sage'?'SO'+j.doc:j.ref)+'_'+j.kind+'_WO.xlsx';document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);
+}
 
 /* ── EMB works order print ──────────────────────────────────────────────── */
 function printJobs(keys){

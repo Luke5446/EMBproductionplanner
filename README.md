@@ -21,7 +21,7 @@ pick, machine and done marks stay in the planner.
   put the order on. Open a job to type the logo and placement (a branded code the planner knows,
   e.g. EGOCICJ0193XS01, brings its logo, placement and image from the style master), or **Upload
   works order** (the sales office's own WO, PDF/image/xlsx) which goes to `wo/` in this repo and
-  marks the job actioned. Print the EMB works order.
+  marks the job actioned. **EMB WO (Excel)** downloads an editable works order in the embroidery form layout.
 - **Pick list** (warehouse): stock is worked out per company and code, oldest promised date
   first, respecting Sage's allocation, then the back-to-back PO, the planner's works order for the
   line or code, a container, else short. Four groups: **Ready to pick in full** (tick jobs, print
@@ -55,6 +55,7 @@ doneAt/By. `logos[]`: name, acct, cust, place, stitches, stitchesAt, file (phase
 Works order files: `wo/<TIB|OH>-<SO>-<kind>-<file name>`. `users[]`: key, name, edits[], pinHash.
 
 ## Changelog
+- v0.5 (25 Nov 2026) EMB WO (Excel): the job's works order downloads as an editable .xlsx in the embroidery form layout (ExcelJS from cdnjs; logo image embedded where the app has one) for the sales office to edit and upload back. Only actioned jobs reach the Pick list.
 - v0.4 (25 Nov 2026) Actioned tab with Undo; works order files per garment (or one for all with the tick); a job is actioned when every garment has a file, or logo + placement are saved, or Mark actioned is pressed. `jobs[key].wos[]` = {path,name,at,by,lines[]} (an old `wo` is read as covering every garment).
 - v0.2 (25 Nov 2026) Orders shows only jobs needing action, sales person filter, works order
   file upload; stitch count moved to the EMB queue and remembered per logo; pick list works out

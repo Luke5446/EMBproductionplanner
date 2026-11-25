@@ -92,7 +92,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.3';
+const VER='0.3.1';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -421,10 +421,12 @@ function render(){
   h+=({orders:renderOrders,pick:renderPick,emb:renderEmb,done:renderDone,logos:renderLogos,settings:renderSettings}[TAB]||renderOrders)();
   document.getElementById('main').innerHTML=h;
 }
+// re-render while typing in the search box without losing the cursor
+let Q_T=null;function renderKeep(inp){clearTimeout(Q_T);Q_T=setTimeout(()=>{render();const e=document.getElementById('qIn');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}},150)}
 function go(t){TAB=t;OPEN=null;FILTER.tile='';lsSet(LS_TAB,t);render()}
 function filterBar(extra){
   return `<div class="filters"><select onchange="FILTER.co=this.value;render()"><option value="">Both companies</option><option value="TIBARD" ${FILTER.co==='TIBARD'?'selected':''}>Tibard</option><option value="OLIVER HARVEY" ${FILTER.co==='OLIVER HARVEY'?'selected':''}>Oliver Harvey</option></select>
-  <input placeholder="SO, customer or code" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;render()" style="min-width:220px">${extra||''}</div>`;
+  <input id="qIn" placeholder="SO, customer or code" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;renderKeep(this)" style="min-width:220px">${extra||''}</div>`;
 }
 function applyFilter(list){const q=FILTER.q.trim().toLowerCase();return list.filter(j=>(!FILTER.co||j.co===FILTER.co)&&(!q||j.doc.includes(q)||(j.cust||'').toLowerCase().includes(q)||j.lines.some(l=>l.code.toLowerCase().includes(q))||(j.ref||'').toLowerCase().includes(q)))}
 function jobRow(j,cols,span){

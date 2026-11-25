@@ -79,7 +79,7 @@ td.num,th.num{text-align:right}
 <header><h1>EMB <span>production</span></h1><div class="sub">Embroidery &amp; transfer jobs · Tibard and Oliver Harvey</div><div class="spacer"></div>
 <span id="hdrInfo" class="sub"></span>
 <button class="btn btn-ghost btn-sm" onclick="loadAll(true)">Refresh</button>
-<button class="btn btn-ghost btn-sm" onclick="setupPC()" id="tokBtn">Set up this PC</button></header>
+<span id="userBox"></span><button class="btn btn-ghost btn-sm" onclick="setupPC()" id="tokBtn">Set up this PC</button></header>
 <nav id="nav"></nav>
 <main id="main"></main>
 <div id="print"></div>
@@ -92,7 +92,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.2.1';
+const VER='0.3';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -101,7 +101,11 @@ const WH_URL='https://luke5446.github.io/Tibard-Cutlog/warehouse.json';
 const BIN_URL='https://luke5446.github.io/Binfinder/stock.csv';
 const OWN_REPO='Luke5446/EMBproductionplanner', OWN_FILE='emb.json';
 const OWN_API='https://api.github.com/repos/'+OWN_REPO+'/contents/', OWN_PAGES='https://luke5446.github.io/EMBproductionplanner/';
-const LS_TOKEN='tibard_cutlog_token', LS_TAB='emb_tab', LS_SET='emb_settings';
+const LS_TOKEN='emb_token', LS_TAB='emb_tab', LS_SET='emb_settings', LS_USER='emb_user';
+const DEFAULT_USERS=[{"key":"emb","name":"EMB manager","role":"EMB room","pinHash":"0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c","edits":["emb","logos","settings"]},{"key":"sales","name":"Sales office","role":"Sales office","pinHash":"edee29f882543b956620b26d0ee0e7e950399b1c4222f5de05e06425b4c995e9","edits":["orders"]},{"key":"warehouse","name":"Warehouse","role":"Warehouse","pinHash":"318aee3fed8c9d040d35a7fc1fa776fb31303833aa2de885354ddf3d44d8fb69","edits":["pick"]},{"key":"admin","name":"Admin","role":"Admin","pinHash":"9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0","edits":["orders","pick","emb","logos","settings","users"]}];
+let USER=lsGet(LS_USER,null);   // the signed-in user on this PC: {key,name,edits}
+// a share link ...#token=XXXX puts the token on this PC and clears the address bar
+(function(){const m=/[#&]token=([^&]+)/.exec(location.hash||'');if(m){try{localStorage.setItem(LS_TOKEN,decodeURIComponent(m[1]))}catch(e){}history.replaceState(null,'',location.pathname+location.search)}})();
 const MACHINES=[{id:'1',name:'Machine 1',heads:6},{id:'2',name:'Machine 2',heads:6},{id:'3',name:'Machine 3',heads:6},{id:'4',name:'Machine 4',heads:6},{id:'5',name:'Machine 5 (single head)',heads:1},{id:'DTF2',name:'DTF twin press',heads:2},{id:'DTF1',name:'DTF single press',heads:1}];
 const DEF_SET={spm:900,setup:10,leadTib:10,leadOH:7};
 let SET=Object.assign({},DEF_SET,lsGet(LS_SET,{}));
@@ -171,7 +175,7 @@ function tagEmbLines(o){
 
 /* ── feeds ─────────────────────────────────────────────────────────────── */
 let SOP={ok:false,err:'',ts:'',so:[],po:[],stk:[],txt:[]}, PP={ok:false,err:'',wos:[],all:[],savedAt:''}, SP={ok:false,cPOs:[]}, WH={ok:false,err:'',entries:[]}, BIN={ok:false,map:new Map()}, BRAND={ok:false,styles:[],at:0};
-let OWN={ok:false,err:'',sha:null,jobs:{},logos:[],savedAt:'',source:''};
+let OWN={ok:false,err:'',sha:null,jobs:{},logos:[],users:[],savedAt:'',source:''};
 let JOBS=[],TAB=lsGet(LS_TAB,'orders'),OPEN=null,FILTER={co:'',q:'',tile:'',user:'',all:false},TICK=new Set();
 function getJSON(url){return fetch(url+'?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})}
 function loadAll(force){
@@ -195,16 +199,51 @@ function styleFor(code){
     const re=new RegExp('^'+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace('\\-\\-','([A-Z0-9]{1,4}?)').replace('--','([A-Z0-9]{1,4}?)')+'$');if(re.test(code))return st}}
   return null;
 }
-function ownApply(j,sha,src){OWN.ok=true;OWN.err='';OWN.sha=sha||null;OWN.jobs=j.jobs||{};OWN.logos=j.logos||[];OWN.savedAt=j.savedAt||'';OWN.source=src}
+function ownApply(j,sha,src){OWN.ok=true;OWN.err='';OWN.sha=sha||null;OWN.jobs=j.jobs||{};OWN.logos=j.logos||[];OWN.users=(j.users&&j.users.length)?j.users:DEFAULT_USERS;OWN.savedAt=j.savedAt||'';OWN.source=src;
+  if(USER){const u=OWN.users.find(x=>x.key===USER.key);if(!u){USER=null;lsSet(LS_USER,null)}else{USER={key:u.key,name:u.name,edits:u.edits||[]};lsSet(LS_USER,USER)}}}
 function ownLoad(){
   const tok=token();
   if(tok)return fetch(OWN_API+OWN_FILE+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'},cache:'no-store'})
     .then(r=>{if(r.status===404)return{empty:true};if(!r.ok)throw new Error('GitHub said '+r.status+(r.status===401?' (token refused)':''));return r.json()})
-    .then(j=>{if(j.empty){ownApply({jobs:{}},null,'api');return}ownApply(JSON.parse(b64d(j.content)),j.sha,'api')}).catch(e=>{OWN.ok=false;OWN.err=String(e.message||e)});
+    .then(j=>{if(j.empty){ownApply({jobs:{}},null,'api');return}ownApply(JSON.parse(b64d(j.content)),j.sha,'api')}).catch(e=>{OWN.err=String(e.message||e);return ownPages()});
+  return ownPages();
+}
+function ownPages(){
   return getJSON(OWN_FILE).then(j=>ownApply(j,null,'pages')).catch(e=>{if(/404/.test(e.message)){ownApply({jobs:{}},null,'pages');return}OWN.ok=false;OWN.err=String(e.message||e)});
 }
 const b64e=s=>btoa(unescape(encodeURIComponent(s))), b64d=b=>decodeURIComponent(escape(atob((b||'').replace(/\s/g,''))));
 function token(){try{return localStorage.getItem(LS_TOKEN)||''}catch(e){return ''}}
+async function sha256(t){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function can(area){return canWrite()&&!!USER&&(USER.edits||[]).includes(area)}
+async function signIn(){
+  const pin=prompt('Enter your PIN');if(pin==null||!pin.trim())return;
+  const h=await sha256(pin.trim());const u=OWN.users.find(x=>x.pinHash===h);
+  if(!u){alert('PIN not recognised.');return}
+  USER={key:u.key,name:u.name,edits:u.edits||[]};lsSet(LS_USER,USER);try{localStorage.setItem('emb_who',u.name)}catch(e){}render();
+}
+function signOut(){USER=null;lsSet(LS_USER,null);render()}
+async function changePin(key){
+  const u=OWN.users.find(x=>x.key===(key||(USER&&USER.key)));if(!u)return;
+  let h=null;
+  if(!key||key===(USER&&USER.key)){const cur=prompt('Current PIN for '+u.name);if(cur==null)return;if(await sha256(cur.trim())!==u.pinHash){alert('Current PIN not recognised.');return}}
+  const n1=prompt('New PIN for '+u.name+' (4 or more digits)');if(n1==null)return;if(!/^\d{4,}$/.test(n1.trim())){alert('Use 4 or more digits.');return}
+  const n2=prompt('New PIN again');if(n2==null||n2.trim()!==n1.trim()){alert('The two PINs differ.');return}
+  h=await sha256(n1.trim());
+  if(OWN.users.some(x=>x.pinHash===h&&x.key!==u.key)){alert('That PIN is already in use. Choose another.');return}
+  ownSave('PIN changed for '+u.name,d=>{const x=d.users.find(y=>y.key===u.key);if(!x)return false;x.pinHash=h;return true},ok=>{if(ok){alert('PIN changed.');render()}});
+}
+const AREAS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['logos','Logos'],['settings','Settings'],['users','Users']];
+async function saveUser(key){
+  const name=val('u_name'),edits=AREAS.map(a=>a[0]).filter(a=>{const e=document.getElementById('u_'+a);return e&&e.checked});
+  if(!name){alert('Give the user a name.');return}
+  let h=null;const pin=val('u_pin');if(pin){if(!/^\d{4,}$/.test(pin)){alert('PIN: 4 or more digits.');return}h=await sha256(pin);if(OWN.users.some(x=>x.pinHash===h&&x.key!==key)){alert('That PIN is already in use.');return}}
+  if(!key&&!h){alert('A new user needs a PIN.');return}
+  ownSave('User '+name+(key?' updated':' added'),d=>{let u=key?d.users.find(x=>x.key===key):null;
+    if(!u){u={key:name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'user'+Date.now(),name,role:'',edits:[]};d.users.push(u)}
+    u.name=name;u.edits=edits;if(h)u.pinHash=h;return true},ok=>{if(ok){EDIT_USER=null;render()}});
+}
+function removeUser(key){const u=OWN.users.find(x=>x.key===key);if(!u||!confirm('Remove '+u.name+'?'))return;ownSave('User '+u.name+' removed',d=>{const i=d.users.findIndex(x=>x.key===key);if(i<0)return false;d.users.splice(i,1);return true},ok=>{if(ok)render()})}
+let EDIT_USER=null;
 function canWrite(){return !!token()}
 function setupPC(){
   const cur=token();
@@ -222,7 +261,7 @@ function ownSave(message,mutate,cb,attempt){
   fetch(OWN_API+OWN_FILE+'?t='+Date.now(),{headers:ghHeaders(),cache:'no-store'})
     .then(r=>{if(r.status===404)return{empty:true};if(r.status>=500&&attempt<4){again();return null}if(!r.ok)throw new Error('GitHub said '+r.status);return r.json()})
     .then(j=>{if(!j)return null;
-      const d=j.empty?{jobs:{},logos:[]}:JSON.parse(b64d(j.content)),sha=j.empty?null:j.sha;d.jobs=d.jobs||{};d.logos=d.logos||[];
+      const d=j.empty?{jobs:{},logos:[]}:JSON.parse(b64d(j.content)),sha=j.empty?null:j.sha;d.jobs=d.jobs||{};d.logos=d.logos||[];if(!d.users||!d.users.length)d.users=JSON.parse(JSON.stringify(DEFAULT_USERS));
       if(mutate(d)===false){ownApply(d,sha,'api');if(cb)cb(true);return null}
       d.savedAt=new Date().toISOString();d.app='EMB production';d.ver=VER;
       const body={message,content:b64e(JSON.stringify(d,null,1))};if(sha)body.sha=sha;
@@ -371,9 +410,10 @@ function render(){
   const live=JOBS.filter(j=>j.status!=='done');
   const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready').length,emb:live.filter(j=>!j.machine&&j.pickState==='all').length};
   document.getElementById('nav').innerHTML=TABS.map(([id,n])=>`<button class="${TAB===id?'on':''}" onclick="go('${id}')">${n}${counts[id]?`<span class="badge">${counts[id]}</span>`:''}</button>`).join('');
-  const info=[];if(SOP.ok)info.push('Sage paste '+fdt(SOP.ts));if(OWN.source==='api')info.push('this PC can save');
+  const info=[];if(SOP.ok)info.push('Sage paste '+fdt(SOP.ts));if(OWN.source==='api')info.push('this PC can save');else if(canWrite()&&OWN.err)info.push('GitHub read failed: '+OWN.err);
   document.getElementById('hdrInfo').textContent=info.join(' · ');
   document.getElementById('tokBtn').textContent=canWrite()?'PC set up ✓':'Set up this PC';
+  document.getElementById('userBox').innerHTML=USER?`<span class="sub">${esc(USER.name)}</span> <button class="btn btn-ghost btn-sm" onclick="changePin()">PIN</button> <button class="btn btn-ghost btn-sm" onclick="signOut()">Sign out</button>`:`<button class="btn btn-gold btn-sm" onclick="signIn()">Sign in</button>`;
   let h='';
   if(!SOP.ok)h+=`<div class="err">The Order tracker's data could not be read${SOP.err?' ('+esc(SOP.err)+')':''}. Jobs come from its daily Sage paste.</div>`;
   if(!PP.ok)h+=`<div class="warn">Production Plan not read${PP.err?' ('+esc(PP.err)+')':''}: works orders are missing.</div>`;
@@ -409,7 +449,7 @@ function renderOrders(){
   <div class="status">A job needs action until it has a logo and a placement, or a works order file uploaded. Open a job to fill it in or upload the works order the sales office made.</div></div>`;
 }
 function jobDetail(j){
-  const o=j.own||{};const w=canWrite()&&j.src==='sage';
+  const o=j.own||{};const w=can('orders')&&j.src==='sage';
   const logoOpts=OWN.logos.filter(l=>!l.acct||l.acct===j.acct);
   let h=`<div class="detail">${j.logoImg?`<img class="logoimg" src="${esc(j.logoImg)}" style="float:right;margin-left:10px">`:''}<div class="grid">
    <div class="field"><label>Logo / design</label><input id="f_logo" list="logos" value="${esc(j.logo)}" ${w?'':'disabled'} placeholder="e.g. Klondyke main logo"><datalist id="logos">${logoOpts.map(l=>`<option value="${esc(l.name)}">`).join('')}</datalist></div>
@@ -424,14 +464,14 @@ function jobDetail(j){
     h+=`<button class="btn btn-grey" onclick="printJobs(['${esc(j.key)}'])">Print EMB WO</button>`;
     if(j.woFile)h+=`<a class="btn btn-grey" href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank">Open WO file: ${esc(j.woFile.name)}</a>`;
     h+=`<span class="muted">${j.actioned?'Actioned '+fdt(o.actionedAt||(j.woFile&&j.woFile.at))+(o.actionedBy||(j.woFile&&j.woFile.by)?' by '+esc(o.actionedBy||j.woFile.by):''):'Needs: '+j.missing.join(' and ')}${j.printed?' · EMB WO printed '+fdt(o.printedAt):''}${j.style?' · logo and placement from the planner record '+esc(j.style.code):''}</span>`;
-    if(!w)h+=`<span class="muted">View only on this PC.</span>`;
+    if(!w)h+=`<span class="muted">View only: sign in as the sales office to edit.</span>`;
   }else h+=`<span class="muted">Works order ${esc(j.ref)} in the <a href="https://luke5446.github.io/Tibard-Productionplan/" target="_blank">Production Plan</a>; pick and done marks are made there.${j.style?' Logo and placement from its style record.':''}</span>`;
   if(j.doc)h+=`<a class="muted" style="margin-left:auto" href="https://luke5446.github.io/SOPtracker/?so=${esc(j.doc)}" target="_blank">Open in Order tracker ↗</a>`;
   h+=`</div></div>`;
   return h;
 }
 function saveJob(k){
-  const j=JOBS.find(x=>x.key===k);if(!j)return;
+  const j=JOBS.find(x=>x.key===k);if(!j||!can('orders'))return;
   const v={logo:val('f_logo'),place:val('f_place'),colours:val('f_col'),notes:val('f_notes')};
   ownSave('EMB job '+j.doc+' '+j.kind+' updated',d=>{
     const e=d.jobs[k]||{};Object.assign(e,v,{co:j.co,so:j.doc,kind:j.kind,cust:j.cust});
@@ -456,7 +496,7 @@ function who(){let w='';try{w=localStorage.getItem('emb_who')||''}catch(e){}if(!
 /* ── pick list (warehouse) ──────────────────────────────────────────────── */
 function renderPick(){
   const all=applyFilter(JOBS.filter(j=>j.status!=='done'&&!j.machine&&j.pickState!=='all'));
-  const w=canWrite();
+  const w=can('pick');
   const ready=all.filter(j=>j.status==='ready'&&j.src==='sage'),picking=all.filter(j=>j.status==='picking'||j.status==='part'),prod=all.filter(j=>j.status==='production'),wait=all.filter(j=>j.status==='waiting');
   const ticked=[...TICK].filter(k=>ready.some(j=>j.key===k));
   const lineRows=(j,showPick)=>j.lines.map((l,i)=>`<tr ${i===0?'style="border-top:2px solid var(--line)"':''}>${i===0?`<td rowspan="${j.lines.length}">${showPick==='tick'?`<input type="checkbox" class="chk" ${TICK.has(j.key)?'checked':''} onchange="tick('${esc(j.key)}',this.checked)"> `:''}${soCell(j)}<div style="margin-top:4px">${pill(j.status)}${j.actioned?'':' <span class="pill p-new">sales to action</span>'}</div>${j.src==='sage'?`<div style="margin-top:6px"><button class="btn btn-grey btn-sm" onclick="printPick(['${esc(j.key)}'])">${j.pickPrinted?'Reprint':'Print pick list'}</button></div>`:''}</td><td rowspan="${j.lines.length}">${esc(j.cust)}<div class="muted">${esc(j.ref)}</div></td><td rowspan="${j.lines.length}">${kindPill(j.kind)}${logoCell(j)}</td>`:''}
@@ -472,26 +512,27 @@ function renderPick(){
   ${(!FILTER.tile||FILTER.tile==='picking')?group('Picking','pick list printed, garments being picked',picking,''):''}
   ${(!FILTER.tile||FILTER.tile==='prod')?group('Waiting on a production works order','special makes and planner works orders; pick the rest when it lands',prod,''):''}
   ${(!FILTER.tile||FILTER.tile==='wait')?group('Waiting on stock','back-to-back PO, container or nothing on order',wait,''):''}
-  <div class="status">Stock is served to the oldest promised date first, the Order tracker's rule, with Sage's allocation respected. Printing a pick list puts the job in <b>Picking</b>. Bins come from BinFinder's stock file${BIN.ok?'':' (not read)'}. ${w?'':'This PC is view only: set it up with the token to print and mark picks.'}</div>`;
+  <div class="status">Stock is served to the oldest promised date first, the Order tracker's rule, with Sage's allocation respected. Printing a pick list puts the job in <b>Picking</b>. Bins come from BinFinder's stock file${BIN.ok?'':' (not read)'}. ${w?'':'View only: sign in as the warehouse to print and mark picks.'}</div>`;
 }
 function tick(k,on){if(on)TICK.add(k);else TICK.delete(k);render()}
 function tickAll(keys){const all=keys.every(k=>TICK.has(k));keys.forEach(k=>all?TICK.delete(k):TICK.add(k));render()}
 function pickLine(jk,lk,qty){
-  const j=JOBS.find(x=>x.key===jk);if(!j)return;
+  const j=JOBS.find(x=>x.key===jk);if(!j||!can('pick'))return;
   ownSave('EMB pick '+j.doc+' '+lk.split('-').pop()+(qty?' picked':' undone'),d=>{const e=d.jobs[jk]||(d.jobs[jk]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.picks=e.picks||{};
     if(qty)e.picks[lk]={qty,at:new Date().toISOString(),by:who()};else delete e.picks[lk];return true},ok=>{if(ok){build();render()}});
 }
 function pickAll(jk){
-  const j=JOBS.find(x=>x.key===jk);if(!j)return;
+  const j=JOBS.find(x=>x.key===jk);if(!j||!can('pick'))return;
   ownSave('EMB pick '+j.doc+' '+j.kind+' all picked',d=>{const e=d.jobs[jk]||(d.jobs[jk]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.picks=e.picks||{};const at=new Date().toISOString(),by=who();
     j.lines.forEach(l=>{if(!e.picks[l.key])e.picks[l.key]={qty:l.out,at,by}});return true},ok=>{if(ok){build();render()}});
 }
 function printPick(keys){
   const js=keys.map(k=>JOBS.find(j=>j.key===k)).filter(Boolean);if(!js.length)return;
+  if(!can('pick')){alert('Sign in as the warehouse to print pick lists.');return}
   document.getElementById('print').innerHTML=js.map(pickDoc).join('');
   window.print();
   TICK.clear();
-  if(canWrite())ownSave('Pick lists printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});if(!e.pickPrintedAt)e.pickPrintedAt=new Date().toISOString();e.pickPrintedLast=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
+  if(can('pick'))ownSave('Pick lists printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});if(!e.pickPrintedAt)e.pickPrintedAt=new Date().toISOString();e.pickPrintedLast=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
   else render();
 }
 function pickDoc(j){
@@ -505,7 +546,7 @@ function pickDoc(j){
 /* ── EMB queue ──────────────────────────────────────────────────────────── */
 function renderEmb(){
   const list=applyFilter(JOBS.filter(j=>j.status!=='done'));
-  const w=canWrite();
+  const w=can('emb');
   const byM={};list.forEach(j=>{if(j.machine)byM[j.machine]=(byM[j.machine]||0)+j.minutes});
   return `<div class="tiles">${MACHINES.map(m=>`<div class="tile"><b>${list.filter(j=>j.machine===m.id).length}</b><span>${m.name}${byM[m.id]?' · '+Math.round(byM[m.id]/60*10)/10+' h':''}</span></div>`).join('')}</div>
   <div class="card"><h2>EMB queue <span class="r">${list.length} jobs · picked first, then by due date</span></h2>${filterBar()}
@@ -520,7 +561,7 @@ function renderEmb(){
   <div class="status">Time = stitches ÷ ${SET.spm} per minute per garment + ${SET.setup} min set-up per product, shared over the machine's heads. A stitch count typed here is offered to remember against the job's logo for next time.</div></div>`;
 }
 function setStitches(k,v){
-  const j=JOBS.find(x=>x.key===k);if(!j)return;const n=+v||0;
+  const j=JOBS.find(x=>x.key===k);if(!j||!can('emb'))return;const n=+v||0;
   let remember=false,name=j.logo;
   if(n>0){if(!name){name=prompt('Remember this stitch count for which logo? (leave blank to keep it on this job only)','')||'';}
     else remember=confirm('Remember '+n+' stitches for "'+name+'" so the next order gets it automatically?');
@@ -529,18 +570,18 @@ function setStitches(k,v){
     if(remember&&name){let l=d.logos.find(x=>x.name.toLowerCase()===name.toLowerCase());if(!l){l={name,acct:j.acct,cust:j.cust,place:j.place||'',at:new Date().toISOString()};d.logos.push(l)}l.stitches=n;l.stitchesAt=new Date().toISOString()}
     return true},ok=>{if(ok){build();render()}});
 }
-function setMachine(k,m){const j=JOBS.find(x=>x.key===k);if(!j)return;
+function setMachine(k,m){const j=JOBS.find(x=>x.key===k);if(!j||!can('emb'))return;
   ownSave('EMB job '+j.doc+' '+j.kind+(m?' on machine '+m:' taken off machine'),d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.machine=m;e.machineAt=m?new Date().toISOString():'';return true},ok=>{if(ok){build();render()}})}
-function markDone(k){const j=JOBS.find(x=>x.key===k);if(!j)return;
+function markDone(k){const j=JOBS.find(x=>x.key===k);if(!j||!can('emb'))return;
   if(j.pickState!=='all'&&!confirm('Not every garment is marked picked. Mark the job done anyway?'))return;
   ownSave('EMB job '+j.doc+' '+j.kind+' done',d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.doneAt=new Date().toISOString();e.doneBy=who();return true},ok=>{if(ok){build();render()}})}
-function undoDone(k){const j=JOBS.find(x=>x.key===k);if(!j)return;
+function undoDone(k){const j=JOBS.find(x=>x.key===k);if(!j||!can('emb'))return;
   ownSave('EMB job '+j.doc+' '+j.kind+' done mark undone',d=>{const e=d.jobs[k];if(!e)return false;delete e.doneAt;delete e.doneBy;return true},ok=>{if(ok){build();render()}})}
 function renderDone(){
   const list=applyFilter(JOBS.filter(j=>j.status==='done')).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
   return `<div class="card"><h2>Done, awaiting despatch <span class="r">${list.length} jobs · a job leaves when Sage shows it despatched</span></h2>${filterBar()}
   <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Machine</th><th>Done</th><th></th></tr></thead><tbody>
-  ${list.map(j=>`<tr><td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}</td><td>${linesCell(j)}</td><td>${esc((MACHINES.find(m=>m.id===j.machine)||{}).name||j.machine||'')}</td><td>${fdt(j.doneAt)}${j.own&&j.own.doneBy?' · '+esc(j.own.doneBy):''}</td><td>${canWrite()&&j.src==='sage'?`<button class="btn btn-grey btn-sm" onclick="undoDone('${esc(j.key)}')">Undo</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="msg">Nothing done yet.</td></tr>'}</tbody></table></div>`;
+  ${list.map(j=>`<tr><td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}</td><td>${linesCell(j)}</td><td>${esc((MACHINES.find(m=>m.id===j.machine)||{}).name||j.machine||'')}</td><td>${fdt(j.doneAt)}${j.own&&j.own.doneBy?' · '+esc(j.own.doneBy):''}</td><td>${can('emb')&&j.src==='sage'?`<button class="btn btn-grey btn-sm" onclick="undoDone('${esc(j.key)}')">Undo</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="msg">Nothing done yet.</td></tr>'}</tbody></table></div>`;
 }
 function renderLogos(){
   const list=OWN.logos.slice().sort((a,b)=>(a.cust||'').localeCompare(b.cust||'')||a.name.localeCompare(b.name));
@@ -554,17 +595,30 @@ function renderSettings(){
   <div class="field"><label>Set-up minutes per product</label><input id="s_setup" type="number" value="${SET.setup}"></div>
   <div class="field"><label>Lead time Tibard (working days)</label><input id="s_lt" type="number" value="${SET.leadTib}"></div>
   <div class="field"><label>Lead time Oliver Harvey (working days)</label><input id="s_lo" type="number" value="${SET.leadOH}"></div></div>
-  <div class="actions"><button class="btn btn-gold" onclick="saveSet()">Save</button><span class="muted">Due date = Sage order date + lead time. Machines: 1 to 4 six heads, 5 single head, DTF twin and single presses.</span></div></div>
+  <div class="actions"><button class="btn btn-gold" onclick="saveSet()" ${can('settings')?'':'disabled'}>Save</button><span class="muted">Due date = Sage order date + lead time. Machines: 1 to 4 six heads, 5 single head, DTF twin and single presses.</span></div></div>
+  ${usersCard()}
   <div class="msg">Feeds: Order tracker ${SOP.ok?'read ('+fdt(SOP.ts)+')':'<b>not read</b>'} · Production Plan ${PP.ok?'read ('+fdt(PP.savedAt)+')':'<b>not read</b>'} · style master ${BRAND.ok?BRAND.styles.length+' branded records':'<b>not read</b>'} · Stock Planner ${SP.ok?'read':'<b>not read</b>'} · warehouse log ${WH.ok?'read':'<b>not read</b>'} · BinFinder ${BIN.ok?BIN.map.size+' bins':'<b>not read</b>'} · emb.json ${OWN.ok?'read ('+(OWN.savedAt?fdt(OWN.savedAt):'empty')+', '+OWN.source+')':'<b>not read</b>'} · v${VER}</div></div>`;
 }
-function saveSet(){SET={spm:+val('s_spm')||900,setup:+val('s_setup')||10,leadTib:+val('s_lt')||10,leadOH:+val('s_lo')||7};lsSet(LS_SET,SET);build();render()}
+function usersCard(){
+  const admin=can('users');
+  const eu=EDIT_USER==='new'?{key:'',name:'',edits:[]}:EDIT_USER?OWN.users.find(u=>u.key===EDIT_USER):null;
+  let h=`<div class="card"><h2>Users and PINs <span class="r">everyone can view; a PIN unlocks editing of the areas below on a PC that holds the token</span></h2>
+  <table><thead><tr><th>User</th><th>Can edit</th><th></th></tr></thead><tbody>${OWN.users.map(u=>`<tr><td><b>${esc(u.name)}</b>${USER&&USER.key===u.key?' <span class="pill p-done">signed in here</span>':''}</td><td>${(u.edits||[]).map(a=>(AREAS.find(x=>x[0]===a)||[a,a])[1]).join(', ')||'<span class="muted">view only</span>'}</td><td>${admin?`<button class="btn btn-grey btn-sm" onclick="EDIT_USER='${esc(u.key)}';render()">Edit</button> <button class="btn btn-grey btn-sm" onclick="changePin('${esc(u.key)}')">Reset PIN</button> <button class="btn btn-grey btn-sm" onclick="removeUser('${esc(u.key)}')">Remove</button>`:USER&&USER.key===u.key?`<button class="btn btn-grey btn-sm" onclick="changePin()">Change my PIN</button>`:''}</td></tr>`).join('')}</tbody></table>`;
+  if(admin)h+=`<div class="actions" style="padding:0 14px 12px"><button class="btn btn-grey btn-sm" onclick="EDIT_USER='new';render()">Add user</button></div>`;
+  if(eu)h+=`<div class="detail"><div class="grid"><div class="field"><label>Name</label><input id="u_name" value="${esc(eu.name)}"></div><div class="field"><label>${eu.key?'New PIN (blank = keep)':'PIN (4+ digits)'}</label><input id="u_pin" inputmode="numeric"></div>
+    <div class="field"><label>Can edit</label>${AREAS.map(a=>`<label style="display:inline-block;margin-right:10px;font-size:13px"><input type="checkbox" class="chk" id="u_${a[0]}" ${eu.edits.includes(a[0])?'checked':''}> ${a[1]}</label>`).join('')}</div></div>
+    <div class="actions"><button class="btn btn-gold" onclick="saveUser('${esc(eu.key)}')">Save user</button><button class="btn btn-grey" onclick="EDIT_USER=null;render()">Cancel</button></div></div>`;
+  h+=`<div class="status">Default PINs when the app is first set up: EMB manager 1111, Sales office 2222, Warehouse 3333, Admin 0000. Change them straight away (Admin → Reset PIN). PINs are stored hashed in emb.json. A share link <code>${esc(OWN_PAGES)}#token=…</code> puts the token on a PC and then disappears from the address bar.</div></div>`;
+  return h;
+}
+function saveSet(){if(!can('settings')){alert('Sign in as the EMB manager to change settings.');return}SET={spm:+val('s_spm')||900,setup:+val('s_setup')||10,leadTib:+val('s_lt')||10,leadOH:+val('s_lo')||7};lsSet(LS_SET,SET);build();render()}
 
 /* ── EMB works order print ──────────────────────────────────────────────── */
 function printJobs(keys){
   const js=keys.map(k=>JOBS.find(j=>j.key===k)).filter(Boolean);if(!js.length)return;
   document.getElementById('print').innerHTML=js.map(wop).join('');
   window.print();
-  if(canWrite())ownSave('EMB WO printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.printedAt=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
+  if(can('orders')||can('emb'))ownSave('EMB WO printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.printedAt=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
 }
 function wop(j){
   return `<div class="wop"><div class="hd"><div><h1>${j.kind==='EMB'?'Embroidery':'Transfer'} works order</h1><div>${j.co==='TIBARD'?'Tibard':'Oliver Harvey'} · printed ${fdt(new Date().toISOString())}</div></div><div class="k">${esc(j.src==='sage'?'SO '+j.doc:j.ref)}</div></div>

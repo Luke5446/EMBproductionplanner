@@ -38,18 +38,21 @@ pick, machine and done marks stay in the planner.
 
 Time estimate = garments x stitches / 900 + 10 min per product, shared over the machine's heads.
 
-## Marks and the token
-Confirmations, picks, machine, done and printed marks are kept in `emb.json` in this repo
-(`jobs` keyed `company|SO|kind`, `logos`), written through the GitHub contents API with the
-fine-grained token already on the warehouse and EMB PCs (`tibard_cutlog_token` in the browser);
-the token must be allowed to write this repo. Without the token the page is view only.
-`emb.json` is read through GitHub Pages by everyone.
+## Marks, the token and PINs
+Marks (actioned, picks, machine, done, printed), logos and users are kept in `emb.json` in this
+repo, written through the GitHub contents API with a fine-grained token for this repo
+(`emb_token` in the browser; **Set up this PC**, or a share link `…/#token=XXXX` which is
+removed from the address bar once taken). Everyone can view. Editing needs the token **and** a
+PIN sign-in (top right): the EMB manager edits the EMB queue, Logos and Settings; the sales
+office edits Orders; the warehouse edits the Pick list; Admin manages users and PINs
+(Settings → Users). PINs are SHA-256 hashed like the CRM's. Default PINs on first set-up:
+EMB manager 1111, Sales office 2222, Warehouse 3333, Admin 0000 - change them straight away.
 
 ## Data model (for the on-prem system)
 `jobs[key]`: co, so, kind, cust, logo, place, stitches, colours, notes, actionedAt/By,
 wo{path,name,at,by}, printedAt, pickPrintedAt, picks{lineKey:{qty,at,by}}, machine, machineAt,
 doneAt/By. `logos[]`: name, acct, cust, place, stitches, stitchesAt, file (phase 3).
-Works order files: `wo/<TIB|OH>-<SO>-<kind>-<file name>`.
+Works order files: `wo/<TIB|OH>-<SO>-<kind>-<file name>`. `users[]`: key, name, edits[], pinHash.
 
 ## Changelog
 - v0.2 (25 Nov 2026) Orders shows only jobs needing action, sales person filter, works order

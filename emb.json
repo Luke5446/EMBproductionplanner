@@ -1,1 +1,81 @@
-{"app":"EMB production","jobs":{},"logos":[],"savedAt":""}
+{
+ "app": "EMB production",
+ "jobs": {
+  "TIBARD|875819|EMB": {
+   "co": "TIBARD",
+   "so": "875819",
+   "kind": "EMB",
+   "cust": "Brake Bros",
+   "wo": {
+    "path": "wo/TIB-875819-EMB-HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
+    "name": "HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
+    "at": "2026-11-25T16:52:24.527Z",
+    "by": "Admin"
+   },
+   "actionedAt": "2026-11-25T16:52:24.527Z",
+   "actionedBy": "Admin"
+  },
+  "TIBARD|875819|Transfer": {
+   "co": "TIBARD",
+   "so": "875819",
+   "kind": "Transfer",
+   "cust": "Brake Bros",
+   "wo": {
+    "path": "wo/TIB-875819-Transfer-HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
+    "name": "HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
+    "at": "2026-11-25T16:53:07.772Z",
+    "by": "Admin"
+   },
+   "actionedAt": "2026-11-25T16:53:07.772Z",
+   "actionedBy": "Admin"
+  }
+ },
+ "logos": [],
+ "savedAt": "2026-11-25T16:53:07.772Z",
+ "users": [
+  {
+   "key": "emb",
+   "name": "EMB manager",
+   "role": "EMB room",
+   "pinHash": "0ffe1abd1a08215353c233d6e009613e95eec4253832a761af28ff37ac5a150c",
+   "edits": [
+    "emb",
+    "logos",
+    "settings"
+   ]
+  },
+  {
+   "key": "sales",
+   "name": "Sales office",
+   "role": "Sales office",
+   "pinHash": "edee29f882543b956620b26d0ee0e7e950399b1c4222f5de05e06425b4c995e9",
+   "edits": [
+    "orders"
+   ]
+  },
+  {
+   "key": "warehouse",
+   "name": "Warehouse",
+   "role": "Warehouse",
+   "pinHash": "318aee3fed8c9d040d35a7fc1fa776fb31303833aa2de885354ddf3d44d8fb69",
+   "edits": [
+    "pick"
+   ]
+  },
+  {
+   "key": "admin",
+   "name": "Admin",
+   "role": "Admin",
+   "pinHash": "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0",
+   "edits": [
+    "orders",
+    "pick",
+    "emb",
+    "logos",
+    "settings",
+    "users"
+   ]
+  }
+ ],
+ "ver": "0.3.1"
+}

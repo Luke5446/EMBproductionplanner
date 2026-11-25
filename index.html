@@ -47,6 +47,7 @@ td.num,th.num{text-align:right}
 .sagetxt{font-size:12px;color:#4b2e9c;background:#f3effd;border-radius:5px;padding:3px 7px;margin-top:3px;display:inline-block}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
 .muted{color:var(--mut);font-size:12px}
+.clip{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .msg{padding:10px 14px;font-size:13px;color:var(--mut)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
 .filters input,.filters select{border:1px solid var(--line);border-radius:6px;padding:6px 9px;font-size:13px}
@@ -91,7 +92,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.2';
+const VER='0.2.1';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -509,7 +510,7 @@ function renderEmb(){
   return `<div class="tiles">${MACHINES.map(m=>`<div class="tile"><b>${list.filter(j=>j.machine===m.id).length}</b><span>${m.name}${byM[m.id]?' · '+Math.round(byM[m.id]/60*10)/10+' h':''}</span></div>`).join('')}</div>
   <div class="card"><h2>EMB queue <span class="r">${list.length} jobs · picked first, then by due date</span></h2>${filterBar()}
   <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Picked</th><th>Due</th><th>Stitches</th><th class="num">Est. min</th><th>Machine</th><th></th></tr></thead><tbody>
-  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted">${esc(j.place)}</div>`:''}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td>
+  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted clip" title="${esc(j.place)}">${esc(j.place)}</div>`:''}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td>
    <td>${j.pickState==='all'?'<span class="pill p-pick">Picked</span>':j.pickState==='part'?'<span class="pill p-part">Part picked</span>':pill(j.status)}${j.shortLines&&j.pickState!=='all'?`<div class="muted">${j.shortLines} line${j.shortLines>1?'s':''} not on the shelf</div>`:''}</td>
    <td>${dueCell(j)}</td>
    <td onclick="event.stopPropagation()"><input type="number" min="0" style="width:80px;border:1px solid var(--line);border-radius:5px;padding:4px" value="${j.stitches||''}" ${w?'':'disabled'} onchange="setStitches('${esc(j.key)}',this.value)">${j.stitchesFrom==='memory'?'<div class="muted">from logo memory</div>':''}</td>

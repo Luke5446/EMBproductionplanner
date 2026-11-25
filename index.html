@@ -19,7 +19,7 @@ nav{background:#fff;border-bottom:1px solid var(--line);display:flex;gap:2px;pad
 nav button{border:none;background:none;padding:12px 14px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
 nav button.on{color:var(--navy);border-bottom-color:var(--gold)}
 nav .badge{background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;margin-left:5px}
-main{max-width:1280px;margin:0 auto;padding:16px 14px 70px}
+main{max-width:1320px;margin:0 auto;padding:16px 14px 70px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;margin-top:14px;box-shadow:0 1px 3px rgba(20,30,50,.06);overflow:hidden}
 .card h2{font-size:14px;padding:11px 14px;border-bottom:1px solid var(--line);color:var(--navy);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .card h2 .r{margin-left:auto;font-size:12px;font-weight:400;color:var(--mut)}
@@ -32,8 +32,8 @@ td.num,th.num{text-align:right}
 .desc{color:var(--mut);font-size:12px}
 .pill{display:inline-block;border-radius:10px;padding:1px 8px;font-size:11px;font-weight:600;white-space:nowrap}
 .p-new{background:#fdecc8;color:#7a4b00}.p-conf{background:#dbe7fb;color:#1f3f7a}.p-pick{background:#e3f1e8;color:#1e5a34}.p-part{background:#fff3cd;color:#7a5200}
-.p-mach{background:#e9e1fb;color:#4b2e9c}.p-done{background:#d9efe0;color:#155d31}.p-late{background:#fde2df;color:#8a1f16}.p-emb{background:#e9e1fb;color:#4b2e9c}.p-tr{background:#d7f0f7;color:#0b5566}
-.p-wo{background:#f3e8c8;color:#5c4300}.p-grey{background:#e9ecf1;color:#55606e}.p-short{background:#fde2df;color:#8a1f16}.p-stock{background:#d9efe0;color:#155d31}
+.p-mach{background:#e9e1fb;color:#4b2e9c}.p-done{background:#d9efe0;color:#155d31}.p-emb{background:#e9e1fb;color:#4b2e9c}.p-tr{background:#d7f0f7;color:#0b5566}
+.p-wo{background:#f3e8c8;color:#5c4300}.p-grey{background:#e9ecf1;color:#55606e}.p-short{background:#fde2df;color:#8a1f16}.p-stock{background:#d9efe0;color:#155d31}.p-ready{background:#d9efe0;color:#155d31}
 .co{font-size:10px;font-weight:700;padding:1px 5px;border-radius:4px;margin-right:4px}.co-t{background:var(--navy);color:#fff}.co-o{background:var(--gold);color:#22262e}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
 .tile{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer}
@@ -50,11 +50,14 @@ td.num,th.num{text-align:right}
 .msg{padding:10px 14px;font-size:13px;color:var(--mut)}
 .filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
 .filters input,.filters select{border:1px solid var(--line);border-radius:6px;padding:6px 9px;font-size:13px}
+.filters label{font-size:13px;display:flex;align-items:center;gap:4px}
 .status{font-size:12px;color:var(--mut);padding:8px 14px}
 .late{color:var(--red);font-weight:600}
-.chk{width:17px;height:17px;vertical-align:middle}
+.chk{width:17px;height:17px;vertical-align:middle;cursor:pointer}
 .warn{background:#fff8e6;border:1px solid #f1dfa8;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px}
 .err{background:#fdecea;border:1px solid #f3c1bc;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px}
+.bin{font-family:Consolas,monospace;font-weight:700;background:#eef3fb;border-radius:4px;padding:1px 6px}
+.logoimg{max-height:70px;max-width:180px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:3px}
 #print{display:none}
 @media print{body>*{display:none!important}#print{display:block!important}body{background:#fff}}
 .wop{font-family:'Segoe UI',Arial,sans-serif;color:#000;padding:10mm;page-break-after:always;max-width:190mm}
@@ -63,10 +66,11 @@ td.num,th.num{text-align:right}
 .wop .kv{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px;font-size:14px;margin-bottom:10px}
 .wop .kv b{color:#333;font-weight:600;display:inline-block;min-width:110px}
 .wop table{font-size:13px;margin-top:6px}.wop th{background:#eef1f6;color:#333}.wop td,.wop th{border:1px solid #bbb;padding:5px 7px}
-.wop .logo{border:1px solid #bbb;min-height:60mm;display:flex;align-items:center;justify-content:center;margin-top:10px;font-size:13px;color:#666;padding:6px}
+.wop .logo{border:1px solid #bbb;min-height:50mm;display:flex;align-items:center;justify-content:center;margin-top:10px;font-size:13px;color:#666;padding:6px}
 .wop .logo img{max-height:70mm;max-width:100%}
 .wop .sign{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;font-size:12px}.wop .sign div{border-top:1px solid #333;padding-top:4px}
 .wop .big{font-size:16px;font-weight:600;margin-top:8px}
+.wop .bigbin{font-family:Consolas,monospace;font-size:16px;font-weight:700}
 @media (max-width:700px){main{padding:10px 8px}th,td{padding:6px 7px}}
 </style>
 </head>
@@ -79,15 +83,23 @@ td.num,th.num{text-align:right}
 <main id="main"></main>
 <div id="print"></div>
 <script>
-/* EMB production app v0.1 (25 Nov 2026) - phase 1: jobs from the Order tracker's Sage paste, Orders, EMB WO print, Pick list, EMB queue.
-   Reads: Order tracker data.json (raw Sage paste), Production Plan data.json (embroidery-only works orders) and the warehouse log
-   (Tibard-Cutlog warehouse.json). Writes its own marks to emb.json in this repo through the GitHub contents API with the token set on this PC. */
-const VER='0.1';
+/* EMB production app - phase 1 (25 Nov 2026).
+   v0.2: Orders tab shows only jobs needing action (logo + placement, or an uploaded works order file), filter by Sage sales
+   person; works order files upload to wo/ in this repo; stitch count is the EMB manager's, remembered per logo; pick list
+   works out what is in stock (oldest promised date first, back-to-back POs, planner works orders, containers), shows bins
+   from BinFinder, ready-to-pick list with bulk pick-doc print = Picking; planner works orders pull logo and placement
+   from the planner's style master.
+   Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
+   Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
+const VER='0.2';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
+const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
+const SP_URL='https://luke5446.github.io/Tibard-Stock-Planner/data.json';
 const WH_URL='https://luke5446.github.io/Tibard-Cutlog/warehouse.json';
+const BIN_URL='https://luke5446.github.io/Binfinder/stock.csv';
 const OWN_REPO='Luke5446/EMBproductionplanner', OWN_FILE='emb.json';
-const OWN_API='https://api.github.com/repos/'+OWN_REPO+'/contents/'+OWN_FILE, OWN_PAGES='emb.json';
+const OWN_API='https://api.github.com/repos/'+OWN_REPO+'/contents/', OWN_PAGES='https://luke5446.github.io/EMBproductionplanner/';
 const LS_TOKEN='tibard_cutlog_token', LS_TAB='emb_tab', LS_SET='emb_settings';
 const MACHINES=[{id:'1',name:'Machine 1',heads:6},{id:'2',name:'Machine 2',heads:6},{id:'3',name:'Machine 3',heads:6},{id:'4',name:'Machine 4',heads:6},{id:'5',name:'Machine 5 (single head)',heads:1},{id:'DTF2',name:'DTF twin press',heads:2},{id:'DTF1',name:'DTF single press',heads:1}];
 const DEF_SET={spm:900,setup:10,leadTib:10,leadOH:7};
@@ -114,16 +126,17 @@ const custName=o=>{if(PROFORMA_ACCTS.includes((o.acct||'').toUpperCase())&&(o.re
 const isEmbCode=c=>/^(LOGO|TEXT)(APPLICATION|ORIGINATION)/.test(c||'');
 const txtKind=t=>/transfer|\bdtf\b|\bprint/i.test(t||'')?'Transfer':/embroid|\bemb\b|logo|personalis|monogram|initial|\bname\b|\btext\b/i.test(t||'')?'EMB':'';
 function parseRaw(txt){
-  const so=[],stk=[],txts=[];
+  const so=[],po=[],stk=[],txts=[];
   txt.replace(/\r/g,'').split('\n').forEach(line=>{
     if(!line.trim())return;
     const c=line.split('\t').map(x=>{x=x.trim();if(x.length>1&&x[0]==='"'&&x[x.length-1]==='"')x=x.slice(1,-1).replace(/""/g,'"');return x.trim()});
-    if(!/^(SO|TXT|STK)$/.test(c[0])||c.length<20)return;
+    if(!/^(SO|PO|TXT|STK)$/.test(c[0])||c.length<20)return;
     if(c[0]==='TXT'){if(c[4])txts.push({co:c[1],doc:c[5],seq:num(c[6]),text:c[4]});return}
-    if(c[0]==='SO'){so.push({key:c[2],co:c[1],code:c[3].toUpperCase(),desc:c[4],doc:c[5],seq:num(c[6]),acct:c[7],acctName:c[8],ref:c[9],date:c[10]||'',q1:num(c[11]),q2:num(c[12]),out:num(c[13]),alloc:c[14]===''?0:num(c[14]),ic:c[18]==='Y',hold:c[27]==='1',added:c[28]||'',user:c[29]||''});return}
+    if(c[0]==='SO'){so.push({key:c[2],co:c[1],code:c[3].toUpperCase(),desc:c[4],doc:c[5],seq:num(c[6]),acct:c[7],acctName:c[8],ref:c[9],date:c[10]||'',q1:num(c[11]),q2:num(c[12]),out:num(c[13]),alloc:c[14]===''?0:num(c[14]),link:c[16]||'',ic:c[18]==='Y',hold:c[27]==='1',added:c[28]||'',user:c[29]||''});return}
+    if(c[0]==='PO'){po.push({co:c[1],code:c[3].toUpperCase(),doc:c[5],acct:c[7],acctName:c[8],date:c[10]||'',out:num(c[13]),ic:c[18]==='Y',hold:c[27]==='1'});return}
     stk.push({co:c[1],code:c[3].toUpperCase(),name:c[4],inStock:num(c[11]),alloc:num(c[12]),free:num(c[13]),onPO:num(c[14]),mfr:c[19],grp:c[22]});
   });
-  return{so,stk,txt:txts};
+  return{so,po,stk,txt:txts};
 }
 // which garment lines get a logo / transfer (the Order tracker's rule, v2.13)
 function tagEmbLines(o){
@@ -156,90 +169,140 @@ function tagEmbLines(o){
 }
 
 /* ── feeds ─────────────────────────────────────────────────────────────── */
-let SOP={ok:false,err:'',ts:'',so:[],stk:[],txt:[]}, PP={ok:false,err:'',wos:[],savedAt:''}, WH={ok:false,err:'',entries:[]};
+let SOP={ok:false,err:'',ts:'',so:[],po:[],stk:[],txt:[]}, PP={ok:false,err:'',wos:[],all:[],savedAt:''}, SP={ok:false,cPOs:[]}, WH={ok:false,err:'',entries:[]}, BIN={ok:false,map:new Map()}, BRAND={ok:false,styles:[],at:0};
 let OWN={ok:false,err:'',sha:null,jobs:{},logos:[],savedAt:'',source:''};
-let JOBS=[],TAB=lsGet(LS_TAB,'orders'),OPEN=null,FILTER={co:'',q:'',tile:''};
+let JOBS=[],TAB=lsGet(LS_TAB,'orders'),OPEN=null,FILTER={co:'',q:'',tile:'',user:'',all:false},TICK=new Set();
 function getJSON(url){return fetch(url+'?t='+Date.now(),{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})}
 function loadAll(force){
   document.getElementById('hdrInfo').textContent='Loading…';
-  const a=getJSON(SOP_URL).then(j=>{const p=parseRaw(j.raw||'');SOP={ok:true,err:'',ts:j.ts||j.savedAt||'',so:p.so,stk:p.stk,txt:p.txt}}).catch(e=>{SOP.ok=false;SOP.err=String(e.message||e)});
-  const b=getJSON(PP_URL).then(j=>{PP={ok:true,err:'',wos:(j.WOs||[]).filter(w=>w.embOnly),savedAt:j.savedAt||''}}).catch(e=>{PP.ok=false;PP.err=String(e.message||e)});
+  const a=getJSON(SOP_URL).then(j=>{const p=parseRaw(j.raw||'');SOP={ok:true,err:'',ts:j.ts||j.savedAt||'',so:p.so,po:p.po,stk:p.stk,txt:p.txt}}).catch(e=>{SOP.ok=false;SOP.err=String(e.message||e)});
+  const b=getJSON(PP_URL).then(j=>{PP={ok:true,err:'',all:j.WOs||[],wos:(j.WOs||[]).filter(w=>w.embOnly),smPending:j.smPending||{},savedAt:j.savedAt||''}}).catch(e=>{PP.ok=false;PP.err=String(e.message||e)});
   const c=getJSON(WH_URL).then(j=>{WH={ok:true,err:'',entries:j.entries||[]}}).catch(e=>{WH.ok=false;WH.err=String(e.message||e)});
   const d=ownLoad();
-  Promise.all([a,b,c,d]).then(()=>{build();render()});
+  const e=getJSON(SP_URL).then(j=>{SP={ok:true,cPOs:j.cPOs||[]}}).catch(()=>{SP.ok=false});
+  const f=fetch(BIN_URL+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{const m=new Map();t.replace(/\r/g,'').split('\n').slice(1).forEach(l=>{const c=l.split(',');if(c[0]&&c[2])m.set(c[0].trim().toUpperCase(),c[2].trim())});BIN={ok:m.size>0,map:m}}).catch(()=>{BIN.ok=false});
+  // the planner's style master (logo, placement and logo image per branded code) sits in its index.html; read once a day
+  const g=(BRAND.ok&&Date.now()-BRAND.at<20*3600*1000)?Promise.resolve():fetch(PP_HTML+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.ok?r.text():'').then(t=>{
+    const m=/var STYLE_MASTER=(\{.*?\});?\n/.exec(t);if(!m)return;const sm=JSON.parse(m[1]);
+    BRAND={ok:true,at:Date.now(),styles:(sm.styles||[]).filter(s=>!s.template&&(s.brandType||s.brandPlace||s.logoImg)).map(s=>({code:s.code,alias:s.alias||[],customer:s.customer||'',brandType:s.brandType||'',brandPlace:s.brandPlace||'',logoImg:s.logoImg||'',placeImg:s.placeImg||''}))}}).catch(()=>{});
+  Promise.all([a,b,c,d,e,f,g]).then(()=>{build();render()});
+}
+function styleFor(code){
+  code=(code||'').toUpperCase();
+  for(const st of BRAND.styles){for(const tpl of [st.code].concat(st.alias)){const t=tpl.toUpperCase();
+    if(t.indexOf('--')<0){if(code===t)return st;continue}
+    const re=new RegExp('^'+t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace('\\-\\-','([A-Z0-9]{1,4}?)').replace('--','([A-Z0-9]{1,4}?)')+'$');if(re.test(code))return st}}
+  return null;
 }
 function ownApply(j,sha,src){OWN.ok=true;OWN.err='';OWN.sha=sha||null;OWN.jobs=j.jobs||{};OWN.logos=j.logos||[];OWN.savedAt=j.savedAt||'';OWN.source=src}
 function ownLoad(){
   const tok=token();
-  if(tok)return fetch(OWN_API+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'},cache:'no-store'})
+  if(tok)return fetch(OWN_API+OWN_FILE+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'},cache:'no-store'})
     .then(r=>{if(r.status===404)return{empty:true};if(!r.ok)throw new Error('GitHub said '+r.status+(r.status===401?' (token refused)':''));return r.json()})
     .then(j=>{if(j.empty){ownApply({jobs:{}},null,'api');return}ownApply(JSON.parse(b64d(j.content)),j.sha,'api')}).catch(e=>{OWN.ok=false;OWN.err=String(e.message||e)});
-  return getJSON(OWN_PAGES).then(j=>ownApply(j,null,'pages')).catch(e=>{if(/404/.test(e.message)){ownApply({jobs:{}},null,'pages');return}OWN.ok=false;OWN.err=String(e.message||e)});
+  return getJSON(OWN_FILE).then(j=>ownApply(j,null,'pages')).catch(e=>{if(/404/.test(e.message)){ownApply({jobs:{}},null,'pages');return}OWN.ok=false;OWN.err=String(e.message||e)});
 }
 const b64e=s=>btoa(unescape(encodeURIComponent(s))), b64d=b=>decodeURIComponent(escape(atob((b||'').replace(/\s/g,''))));
 function token(){try{return localStorage.getItem(LS_TOKEN)||''}catch(e){return ''}}
 function canWrite(){return !!token()}
 function setupPC(){
   const cur=token();
-  const t=prompt('Paste the GitHub token for this PC (the same fine-grained token the warehouse and embroidery PCs use for the cutting log; it must be allowed to write '+OWN_REPO+').'+(cur?'\n\nLeave as (kept) to keep the one already here, or clear the box to remove it.':''),cur?'(kept)':'');
+  const t=prompt('Paste the GitHub token for this PC (the fine-grained token the warehouse and embroidery PCs use for the cutting log; it must be allowed to write '+OWN_REPO+').'+(cur?'\n\nLeave as (kept) to keep the one already here, or clear the box to remove it.':''),cur?'(kept)':'');
   if(t===null)return;
   try{if(!t.trim())localStorage.removeItem(LS_TOKEN);else if(t.trim()!=='(kept)')localStorage.setItem(LS_TOKEN,t.trim())}catch(e){alert('Could not keep the token in this browser.')}
   loadAll(true);
 }
+const ghHeaders=()=>({'Authorization':'Bearer '+token(),'Accept':'application/vnd.github+json'});
 // write: read the latest emb.json, apply the change, put it back with its sha; retry on a sha clash or a 5xx
 function ownSave(message,mutate,cb,attempt){
-  const tok=token();if(!tok){alert('This PC has no token. Use "Set up this PC" first.');if(cb)cb(false);return}
+  if(!token()){alert('This PC has no token. Use "Set up this PC" first.');if(cb)cb(false);return}
   attempt=attempt||1;
   const again=()=>setTimeout(()=>ownSave(message,mutate,cb,attempt+1),attempt*1500);
-  fetch(OWN_API+'?t='+Date.now(),{headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json'},cache:'no-store'})
+  fetch(OWN_API+OWN_FILE+'?t='+Date.now(),{headers:ghHeaders(),cache:'no-store'})
     .then(r=>{if(r.status===404)return{empty:true};if(r.status>=500&&attempt<4){again();return null}if(!r.ok)throw new Error('GitHub said '+r.status);return r.json()})
     .then(j=>{if(!j)return null;
       const d=j.empty?{jobs:{},logos:[]}:JSON.parse(b64d(j.content)),sha=j.empty?null:j.sha;d.jobs=d.jobs||{};d.logos=d.logos||[];
       if(mutate(d)===false){ownApply(d,sha,'api');if(cb)cb(true);return null}
       d.savedAt=new Date().toISOString();d.app='EMB production';d.ver=VER;
       const body={message,content:b64e(JSON.stringify(d,null,1))};if(sha)body.sha=sha;
-      return fetch(OWN_API,{method:'PUT',headers:{'Authorization':'Bearer '+tok,'Accept':'application/vnd.github+json','Content-Type':'application/json'},body:JSON.stringify(body)})
+      return fetch(OWN_API+OWN_FILE,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)})
         .then(r=>{if((r.status===409||r.status===422||r.status>=500)&&attempt<4){again();return null}if(!r.ok)throw new Error('GitHub said '+r.status);return r.json()})
         .then(res=>{if(!res)return;ownApply(d,res.content&&res.content.sha,'api');if(cb)cb(true)});
     }).catch(e=>{alert('Could not save: '+e.message+'\n\nNothing was lost - try again in a moment.');if(cb)cb(false)});
+}
+// put a file (a works order PDF / image / xlsx) into wo/ in this repo
+function ownPutFile(path,bytesB64,message,cb){
+  fetch(OWN_API+path+'?t='+Date.now(),{headers:ghHeaders(),cache:'no-store'}).then(r=>r.status===404?{}:r.ok?r.json():Promise.reject(new Error('GitHub said '+r.status)))
+    .then(j=>{const body={message,content:bytesB64};if(j.sha)body.sha=j.sha;
+      return fetch(OWN_API+path,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},ghHeaders()),body:JSON.stringify(body)})})
+    .then(r=>{if(!r.ok)throw new Error('GitHub said '+r.status);cb(true)}).catch(e=>{alert('Upload failed: '+e.message);cb(false)});
 }
 
 /* ── build the jobs ─────────────────────────────────────────────────────── */
 function build(){
   JOBS=[];
   const stkIdx=new Map();SOP.stk.forEach(s=>stkIdx.set(s.co+'|'+s.code,s));
-  const stkFor=(co,code)=>stkIdx.get(co+'|'+code)||stkIdx.get(co+'|BULK'+code)||null;
-  // orders
-  const orders=new Map();
+  const stkFor=(co,code)=>stkIdx.get(co+'|'+code)||null;
+  const orders=new Map(),allLines=[];
   SOP.so.forEach(l=>{
-    if(l.ic)return;   // intercompany mirror orders are never jobs
     const k=l.co+'|'+soNo(l.doc);let o=orders.get(k);
-    if(!o){o={key:k,co:l.co,doc:soNo(l.doc),acct:l.acct,acctName:l.acctName,ref:l.ref,promised:l.date,added:l.added,user:l.user,hold:l.hold,lines:[],texts:[]};orders.set(k,o)}
+    if(!o){o={key:k,co:l.co,doc:soNo(l.doc),acct:l.acct,acctName:l.acctName,ref:l.ref,promised:l.date,added:l.added,user:l.user,hold:l.hold,ic:l.ic,lines:[],texts:[]};orders.set(k,o)}
     if(l.date&&(!o.promised||l.date<o.promised))o.promised=l.date;
-    const s=stkFor(l.co,l.code);
-    const ln={key:l.key,code:l.code,base:baseCode(l.code),desc:l.desc||(s&&s.name)||'',seq:l.seq,q1:l.q1,q2:l.q2,out:l.out,stk:s,charge:!!s&&(s.grp||'').trim()==='54',freetext:/^FREETEXT/.test(l.code)};
+    const s=stkFor(l.co,l.code)||stkFor(l.co,baseCode(l.code));
+    const ln={key:l.key,pkey:l.key.replace(/-SO-/,'-'),co:l.co,order:o,code:l.code,base:baseCode(l.code),desc:l.desc||(s&&s.name)||'',seq:l.seq,q1:l.q1,q2:l.q2,out:l.out,alloc:Math.min(l.alloc,l.out),link:soNo(l.link),promised:l.date,stk:s,charge:!!s&&(s.grp||'').trim()==='54',freetext:/^FREETEXT/.test(l.code),ic:l.ic,hold:l.hold,sources:[]};
     ln.transfer=!!s&&(s.grp||'').trim()==='53'&&(/transfer/i.test((l.desc||'')+' '+(s.name||''))||/^(ID|TX)\d/.test(l.code));
-    o.lines.push(ln);
+    o.lines.push(ln);allLines.push(ln);
   });
   SOP.txt.forEach(x=>{const o=orders.get(x.co+'|'+soNo(x.doc));if(o)o.texts.push(x)});
   orders.forEach(o=>{o.lines.sort((a,b)=>a.seq-b.seq);o.texts.sort((a,b)=>a.seq-b.seq);tagEmbLines(o)});
-  // one job per order per kind (EMB / Transfer); a garment with both is on both jobs
+
+  // ── who gets the stock: per company and code, oldest promised date first (the Order tracker's rule); then the
+  // back-to-back PO Sage raised from the order, the planner's works order for the line or the code, a container, else short
+  const poByDoc=new Map();SOP.po.filter(p=>p.out>0&&!p.hold).forEach(p=>{const k=soNo(p.doc);if(!poByDoc.has(k))poByDoc.set(k,[]);poByDoc.get(k).push({src:p,left:p.out})});
+  const smWO=new Map();PP.all.forEach(w=>{if(w.sm&&w.sm.lineKey)smWO.set(w.sm.lineKey,w)});
+  const woByCode=new Map();PP.all.forEach(w=>{if(w.sm)return;(w.items||[]).forEach(it=>{const b=baseCode(it.code);if(!woByCode.has(b))woByCode.set(b,[]);woByCode.get(b).push({w,left:it.qty})})});
+  const contByCode=new Map();SP.cPOs.forEach(c=>(c.items||[]).forEach(it=>{const b=baseCode(it.code);if(!contByCode.has(b))contByCode.set(b,[]);contByCode.get(b).push({c,left:it.qty})}));
+  const pools=new Map();
+  allLines.filter(l=>l.out>0&&!l.charge&&!l.freetext&&!l.hold&&!l.ic).forEach(l=>{const k=l.co+'|'+l.base;if(!pools.has(k))pools.set(k,[]);pools.get(k).push(l)});
+  pools.forEach((lines,key)=>{
+    const [co,base]=key.split('|');
+    lines.sort((a,b)=>(a.promised||'9999').localeCompare(b.promised||'9999')||(a.order.added||'9999').localeCompare(b.order.added||'9999')||a.order.doc.localeCompare(b.order.doc)||a.seq-b.seq);
+    let stock=0;[base,'BULK'+base].forEach(c=>{const s=stkFor(co,c);if(s&&s.free>0)stock+=s.free});
+    const wos=(woByCode.get(base)||[]).slice().sort((a,b)=>(a.w.createdAt||'').localeCompare(b.w.createdAt||''));
+    const conts=(contByCode.get(base)||[]).slice().sort((a,b)=>(a.c.date||'').localeCompare(b.c.date||''));
+    lines.forEach(ln=>{
+      let need=ln.out;const src=ln.sources;
+      if(ln.alloc>0){const q=Math.min(ln.alloc,need);need-=q;src.push({t:'stock',qty:q,alloc:true})}
+      const sm=smWO.get(ln.pkey);
+      if(need>0&&sm){const q=Math.min(need,(sm.items||[]).reduce((x,i)=>x+i.qty,0)||need);need-=q;src.push({t:'wo',qty:q,ref:sm.ref,due:sm.due,sm:true})}
+      if(need>0&&!sm&&PP.smPending&&PP.smPending[ln.pkey]){src.push({t:'smpend',qty:need});need=0}
+      if(need>0&&stock>0){const q=Math.min(stock,need);stock-=q;need-=q;src.push({t:'stock',qty:q})}
+      if(need>0&&ln.link)(poByDoc.get(ln.link)||[]).filter(p=>baseCode(p.src.code)===base&&p.left>0).forEach(p=>{if(need<=0)return;const q=Math.min(p.left,need);p.left-=q;need-=q;src.push({t:'po',qty:q,ref:soNo(p.src.doc),date:p.src.date,b2b:true,sup:p.src.acctName})});
+      for(const w of wos){if(need<=0)break;if(w.left<=0)continue;const q=Math.min(w.left,need);w.left-=q;need-=q;src.push({t:'wo',qty:q,ref:w.w.ref,due:w.w.due})}
+      for(const c of conts){if(need<=0)break;if(c.left<=0)continue;const q=Math.min(c.left,need);c.left-=q;need-=q;src.push({t:'cont',qty:q,ref:c.c.ref,date:c.c.date})}
+      if(need>0)src.push({t:'short',qty:need});
+    });
+  });
+
+  // ── one job per order per kind (EMB / Transfer); a garment with both is on both jobs
   orders.forEach(o=>{
+    if(o.ic)return;
     const refKind=/^\s*(DTF|PRINT)\b/i.test(o.ref||'')?'Transfer':/^\s*EMB\b/i.test(o.ref||'')?'EMB':'';
     ['EMB','Transfer'].forEach(kind=>{
       let garms=o.lines.filter(l=>!l.charge&&!l.freetext&&!l.transfer&&l.embOn&&l.embOn.includes(kind));
       const markers=o.lines.filter(l=>kind==='EMB'?isEmbCode(l.code)&&!/ORIGINATION/.test(l.code):l.transfer);
-      if(!garms.length&&refKind===kind)garms=o.lines.filter(l=>!l.charge&&!l.freetext&&!l.transfer);   // EMB: / DTF: order ref, no line markers: every garment
+      if(!garms.length&&refKind===kind)garms=o.lines.filter(l=>!l.charge&&!l.freetext&&!l.transfer);
       if(!garms.length)return;
       const liveGarms=garms.filter(l=>l.out>0);
-      const anyOut=liveGarms.length>0||markers.some(l=>l.out>0);
-      if(!anyOut)return;   // all despatched: the job is history
-      const jk=o.key+'|'+kind;const own=OWN.jobs[jk]||{};
+      if(!liveGarms.length&&!markers.some(l=>l.out>0))return;
+      const jk=o.key+'|'+kind;
       const lead=o.co==='TIBARD'?SET.leadTib:SET.leadOH;
       const added=pd(o.added)||today();
-      const j={key:jk,src:'sage',kind,co:o.co,doc:o.doc,cust:custName(o),acct:o.acct,ref:o.ref,promised:pd(o.promised),added,due:addWorkDays(added,lead),hold:o.hold,
-        lines:liveGarms.map(l=>({key:l.key,code:l.code,base:l.base,desc:l.desc,qty:l.q1,out:l.out,txt:l.embTxt,stk:l.stk,free:l.stk?l.stk.free:null})),
-        markers:markers.map(l=>({code:l.code,desc:l.desc,qty:l.q1})),sageTxt:[...new Set(garms.flatMap(l=>l.embTxt))],own};
+      // a branded Sage code the planner knows (EGOCICJ0193XS01 ...) brings its logo and placement with it
+      const st=liveGarms.map(l=>styleFor(l.code)).find(Boolean);
+      const j={key:jk,src:'sage',kind,co:o.co,doc:o.doc,cust:custName(o),acct:o.acct,ref:o.ref,user:o.user,promised:pd(o.promised),added,due:addWorkDays(added,lead),hold:o.hold,
+        lines:liveGarms.map(l=>({key:l.key,code:l.code,base:l.base,desc:l.desc,qty:l.q1,out:l.out,txt:l.embTxt,free:l.stk?l.stk.free:null,sources:l.sources,bin:BIN.map.get(l.base)||BIN.map.get(l.code)||''})),
+        markers:markers.map(l=>({code:l.code,desc:l.desc,qty:l.q1})),sageTxt:[...new Set(garms.flatMap(l=>l.embTxt))],own:OWN.jobs[jk]||{},style:st};
       JOBS.push(j);
     });
   });
@@ -251,57 +314,70 @@ function build(){
     const emb=wh.get('emb|'+w.ref+'|'+code)||{};
     if(wh.get('embbook|'+w.ref+'|'+code))return;
     const sop=items[0]&&items[0].sop&&items[0].sop.covers&&items[0].sop.covers[0]||(w.sm||{});
-    const j={key:'wo|'+w.ref,src:'planner',kind:w.dtf?'Transfer':'EMB',co:(w.sm&&w.sm.co)||'TIBARD',doc:sop.so||(w.sm&&(w.sm.so||w.sm.order))||'',cust:sop.cust||(w.sm&&(w.sm.custName||w.sm.customer))||'',ref:w.ref,promised:pd(w.due),added:pd(w.createdAt)||today(),due:pd(w.due)||today(),
-      lines:items.map((it,i)=>({key:w.ref+'|'+it.code,code:it.code,base:w.pickCode||it.code,desc:'',qty:it.qty,out:it.qty,free:null,txt:[],picked:!!picks[i],pickedAt:picks[i]&&picks[i].pickedAt})),
-      markers:[],sageTxt:[],own:{},wo:w,machine:emb.machine||'',doneAt:emb.doneAt||'',printed:!!w.printed};
+    const st=styleFor(code);
+    const j={key:'wo|'+w.ref,src:'planner',kind:w.dtf?'Transfer':'EMB',co:(w.sm&&w.sm.company)||'TIBARD',doc:soNo(sop.so||(w.sm&&w.sm.so)||''),cust:sop.cust||(w.sm&&(w.sm.custName||w.sm.customer))||(st&&st.customer)||'',ref:w.ref,user:'',promised:pd(w.due),added:pd(w.createdAt)||today(),due:pd(w.due)||today(),
+      lines:items.map((it,i)=>({key:w.ref+'|'+it.code,code:it.code,base:w.pickCode||it.code,desc:w.sm?w.sm.desc||'':'',qty:it.qty,out:it.qty,free:null,txt:[],sources:[{t:'wo',qty:it.qty,ref:w.ref,due:w.due,planner:true}],picked:!!picks[i],pickedAt:picks[i]&&picks[i].pickedAt,bin:BIN.map.get(w.pickCode||it.code)||''})),
+      markers:[],sageTxt:[],own:OWN.jobs['wo|'+w.ref]||{},wo:w,style:st,machine:emb.machine||'',doneAt:emb.doneAt||'',printed:!!w.printed};
     JOBS.push(j);
   });
   JOBS.forEach(status);
   JOBS.sort((a,b)=>(a.due-b.due)||a.doc.localeCompare(b.doc));
 }
+const logoMem=name=>OWN.logos.find(l=>l.name&&name&&l.name.toLowerCase()===name.toLowerCase());
 function status(j){
-  const o=j.own||{};
+  const o=j.own||{},st=j.style;
+  j.logo=o.logo||(st?(st.customer?st.customer+' logo':'Logo on '+st.code):'');
+  j.place=o.place||(st?st.brandPlace:'');
+  j.logoImg=(logoMem(j.logo)||{}).file||(st?st.logoImg:'');
+  j.colours=o.colours||'';j.notes=o.notes||'';j.woFile=o.wo||null;
+  j.printed=!!o.printedAt;j.pickPrinted=!!o.pickPrintedAt;
+  const mem=logoMem(j.logo);j.stitches=o.stitches||(mem?mem.stitches||0:0);j.stitchesFrom=o.stitches?'job':mem&&mem.stitches?'memory':'';
   if(j.src==='sage'){
-    j.printed=!!o.printedAt;j.machine=o.machine||'';j.doneAt=o.doneAt||'';j.confirmed=!!o.confirmedAt;
+    j.machine=o.machine||'';j.doneAt=o.doneAt||'';
     j.lines.forEach(l=>{const p=(o.picks||{})[l.key];l.picked=!!p;l.pickedAt=p&&p.at;l.pickedQty=p?p.qty:0});
-    j.stitches=o.stitches||0;j.logo=o.logo||'';j.place=o.place||'';j.notes=o.notes||'';j.colours=o.colours||'';
-  }else{j.confirmed=true;j.stitches=0;j.logo=j.wo.dtf?'DTF transfer':'';j.place='';j.notes='Works order in the Production Plan';}
+    j.actioned=!!o.actionedAt||!!j.woFile||(!!j.logo&&!!j.place);
+    j.missing=[];if(!j.woFile){if(!j.logo)j.missing.push('logo');if(!j.place)j.missing.push('placement')}
+  }else{j.actioned=true;j.missing=[];j.notes=j.notes||'Works order in the Production Plan'}
   const picked=j.lines.filter(l=>l.picked).length;
   j.pickState=picked===0?'none':picked===j.lines.length?'all':'part';
-  j.lines.forEach(l=>{l.inStock=l.free==null?null:l.free>=l.out});
-  j.shortLines=j.lines.filter(l=>!l.picked&&l.inStock===false).length;
+  // stock: every garment on the shelf = ready; what is not on the shelf is in production (works order) or waiting on a PO / container / nothing
+  j.lines.forEach(l=>{const s=l.sources||[];l.onShelf=s.length>0&&s.every(x=>x.t==='stock');l.wait=s.length?s.filter(x=>x.t!=='stock'):[{t:'hold',qty:l.out}]});
+  const waits=j.lines.filter(l=>!l.picked&&!l.onShelf);
+  j.pick=waits.length===0?'ready':waits.every(l=>l.wait.every(x=>x.t==='wo'||x.t==='smpend'))?'wo':'waiting';
+  j.shortLines=waits.length;
   if(j.doneAt)j.status='done';
   else if(j.machine)j.status='machine';
   else if(j.pickState==='all')j.status='picked';
   else if(j.pickState==='part')j.status='part';
-  else if(j.confirmed)j.status='confirmed';
-  else j.status='new';
+  else if(j.pickPrinted)j.status='picking';
+  else if(j.pick==='ready')j.status='ready';
+  else j.status=j.pick==='wo'?'production':'waiting';
   j.late=!j.doneAt&&j.due<today();
-  // time: stitches / spm per garment + setup per product, shared over the heads of the chosen machine
   const qty=j.lines.reduce((a,l)=>a+l.out,0);
   const m=MACHINES.find(x=>x.id===j.machine);
   const raw=(j.stitches>0?qty*j.stitches/SET.spm:0)+SET.setup*j.lines.length;
   j.minutes=j.stitches>0?Math.round(raw/(m?m.heads:6)):0;
   j.qty=qty;
 }
-const STATUS_PILL={new:['New','p-new'],confirmed:['Confirmed','p-conf'],part:['Part picked','p-part'],picked:['Picked','p-pick'],machine:['On machine','p-mach'],done:['Done','p-done']};
+const STATUS_PILL={ready:['Ready to pick','p-ready'],production:['In production','p-wo'],waiting:['Waiting on stock','p-short'],picking:['Picking','p-conf'],part:['Part picked','p-part'],picked:['Picked','p-pick'],machine:['On machine','p-mach'],done:['Done','p-done']};
 const pill=s=>{const p=STATUS_PILL[s]||[s,'p-grey'];return `<span class="pill ${p[1]}">${p[0]}</span>`};
 const kindPill=k=>`<span class="pill ${k==='EMB'?'p-emb':'p-tr'}">${k}</span>`;
+const waitText=l=>(l.wait||[]).map(x=>x.t==='wo'?`WO ${esc(x.ref)}${x.due?' due '+fdl(pd(x.due)):''}`:x.t==='smpend'?'special make, no WO yet':x.t==='po'?`PO ${esc(x.ref)}${x.sup?' '+esc(x.sup):''}${x.date?' due '+fdl(pd(x.date)):''}`:x.t==='cont'?`container ${esc(x.ref)}${x.date?' '+fdl(pd(x.date)):''}`:x.t==='hold'?'order on hold':'nothing on order').join(', ');
 
 /* ── render ─────────────────────────────────────────────────────────────── */
-const TABS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['settings','Settings']];
+const TABS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['logos','Logos'],['settings','Settings']];
 function render(){
   const live=JOBS.filter(j=>j.status!=='done');
-  const counts={orders:live.filter(j=>j.status==='new').length,pick:live.filter(j=>j.confirmed&&j.pickState!=='all').length,emb:live.filter(j=>j.confirmed&&!j.machine).length};
+  const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready').length,emb:live.filter(j=>!j.machine&&j.pickState==='all').length};
   document.getElementById('nav').innerHTML=TABS.map(([id,n])=>`<button class="${TAB===id?'on':''}" onclick="go('${id}')">${n}${counts[id]?`<span class="badge">${counts[id]}</span>`:''}</button>`).join('');
   const info=[];if(SOP.ok)info.push('Sage paste '+fdt(SOP.ts));if(OWN.source==='api')info.push('this PC can save');
   document.getElementById('hdrInfo').textContent=info.join(' · ');
   document.getElementById('tokBtn').textContent=canWrite()?'PC set up ✓':'Set up this PC';
   let h='';
   if(!SOP.ok)h+=`<div class="err">The Order tracker's data could not be read${SOP.err?' ('+esc(SOP.err)+')':''}. Jobs come from its daily Sage paste.</div>`;
-  if(!PP.ok)h+=`<div class="warn">Production Plan not read${PP.err?' ('+esc(PP.err)+')':''}: special-make works orders are missing from the queue.</div>`;
+  if(!PP.ok)h+=`<div class="warn">Production Plan not read${PP.err?' ('+esc(PP.err)+')':''}: works orders are missing.</div>`;
   if(!OWN.ok&&OWN.err)h+=`<div class="warn">emb.json not read (${esc(OWN.err)}): marks made on this app are not shown.</div>`;
-  h+=({orders:renderOrders,pick:renderPick,emb:renderEmb,done:renderDone,settings:renderSettings}[TAB]||renderOrders)();
+  h+=({orders:renderOrders,pick:renderPick,emb:renderEmb,done:renderDone,logos:renderLogos,settings:renderSettings}[TAB]||renderOrders)();
   document.getElementById('main').innerHTML=h;
 }
 function go(t){TAB=t;OPEN=null;FILTER.tile='';lsSet(LS_TAB,t);render()}
@@ -310,91 +386,147 @@ function filterBar(extra){
   <input placeholder="SO, customer or code" value="${esc(FILTER.q)}" oninput="FILTER.q=this.value;render()" style="min-width:220px">${extra||''}</div>`;
 }
 function applyFilter(list){const q=FILTER.q.trim().toLowerCase();return list.filter(j=>(!FILTER.co||j.co===FILTER.co)&&(!q||j.doc.includes(q)||(j.cust||'').toLowerCase().includes(q)||j.lines.some(l=>l.code.toLowerCase().includes(q))||(j.ref||'').toLowerCase().includes(q)))}
-function jobRow(j,cols){
+function jobRow(j,cols,span){
   const open=OPEN===j.key;
-  return `<tr class="job ${open?'open':''}" onclick="toggle('${esc(j.key)}')">${cols(j)}</tr>${open?`<tr><td colspan="9" style="padding:0">${jobDetail(j)}</td></tr>`:''}`;
+  return `<tr class="job ${open?'open':''}" onclick="toggle('${esc(j.key)}')">${cols(j)}</tr>${open?`<tr><td colspan="${span||9}" style="padding:0">${jobDetail(j)}</td></tr>`:''}`;
 }
 function toggle(k){OPEN=OPEN===k?null:k;render()}
-const soCell=j=>`${coTag(j.co)}<span class="code">${esc(j.src==='sage'?j.doc:j.ref)}</span>${j.src==='planner'?' <span class="pill p-wo">WO</span>':''}${j.hold?' <span class="pill p-grey">on hold</span>':''}`;
+const soCell=j=>`${coTag(j.co)}<span class="code">${esc(j.src==='sage'?j.doc:j.ref)}</span>${j.src==='planner'?' <span class="pill p-wo">WO</span>'+(j.doc?`<div class="muted">SO ${esc(j.doc)}</div>`:''):''}${j.hold?' <span class="pill p-grey">on hold</span>':''}`;
 const dueCell=j=>`<span class="${j.late?'late':''}">${fdl(j.due)}</span><div class="muted">promised ${fdl(j.promised)}</div>`;
-const linesCell=j=>j.lines.map(l=>`<div><span class="code">${esc(l.code)}</span> × ${l.out}${l.picked?' <span class="pill p-pick">picked</span>':l.inStock===false?' <span class="pill p-short">short</span>':''}</div>`).join('');
+const linesCell=j=>j.lines.map(l=>`<div><span class="code">${esc(l.code)}</span> × ${l.out}${l.picked?' <span class="pill p-pick">picked</span>':l.onShelf?'':l.wait&&l.wait.length?` <span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>`:''}</div>`).join('');
+const logoCell=j=>`${j.logoImg?`<img class="logoimg" src="${esc(j.logoImg)}" style="max-height:40px">`:''}${j.logo?`<div class="muted">${esc(j.logo)}</div>`:''}`;
 
 function renderOrders(){
-  const list=applyFilter(JOBS.filter(j=>j.status!=='done'&&j.src==='sage'));
-  const tiles=[['new','New from Sage',list.filter(j=>j.status==='new').length],['confirmed','Confirmed',list.filter(j=>j.status==='confirmed').length],['late','Past lead time',list.filter(j=>j.late).length]];
-  const show=list.filter(j=>!FILTER.tile||(FILTER.tile==='late'?j.late:j.status===FILTER.tile));
-  return `<div class="tiles">${tiles.map(([k,n,c])=>`<div class="tile ${FILTER.tile===k?'on':''}" onclick="FILTER.tile=FILTER.tile==='${k}'?'':'${k}';render()"><b>${c}</b><span>${n}</span></div>`).join('')}</div>
-  <div class="card"><h2>Embroidery and transfer jobs on live sales orders <span class="r">${show.length} jobs · from the Order tracker's paste</span></h2>${filterBar()}
-  <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Sage says</th><th>Due</th><th>Status</th></tr></thead><tbody>
-  ${show.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div></td><td>${kindPill(j.kind)}${j.logo?`<div class="muted">${esc(j.logo)}</div>`:''}</td><td>${linesCell(j)}</td><td>${j.sageTxt.map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')||`<span class="muted">${j.markers.map(m=>esc(m.desc)).join('; ')||'order ref only'}</span>`}</td><td>${dueCell(j)}</td><td>${pill(j.status)}</td>`)).join('')||'<tr><td colspan="7" class="msg">Nothing here.</td></tr>'}</tbody></table></div>`;
+  const base=applyFilter(JOBS.filter(j=>j.status!=='done'&&j.src==='sage'&&(!FILTER.user||j.user===FILTER.user)));
+  const users=[...new Set(JOBS.filter(j=>j.src==='sage').map(j=>j.user).filter(Boolean))].sort();
+  const show=FILTER.all?base:base.filter(j=>!j.actioned);
+  const extra=`<select onchange="FILTER.user=this.value;render()"><option value="">Every sales person</option>${users.map(u=>`<option ${FILTER.user===u?'selected':''}>${esc(u)}</option>`).join('')}</select>
+   <label><input type="checkbox" class="chk" ${FILTER.all?'checked':''} onchange="FILTER.all=this.checked;render()"> show actioned too</label>`;
+  return `<div class="card"><h2>Orders needing action <span class="r">${show.length} of ${base.length} jobs · sales office</span></h2>${filterBar(extra)}
+  <table><thead><tr><th>Order</th><th>Customer · put on by</th><th>Job</th><th>Garments</th><th>Sage says</th><th>Missing</th><th>Due</th><th>Stock</th></tr></thead><tbody>
+  ${show.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div><div class="muted">${esc(j.user)}</div></td><td>${kindPill(j.kind)}${logoCell(j)}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td><td>${j.sageTxt.map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')||`<span class="muted">${j.markers.map(m=>esc(m.desc)).join('; ')||'order ref only'}</span>`}</td><td>${j.actioned?'<span class="pill p-done">actioned</span>':j.missing.map(m=>`<span class="pill p-new">${m}</span>`).join(' ')}</td><td>${dueCell(j)}</td><td>${pill(j.status)}</td>`,8)).join('')||'<tr><td colspan="8" class="msg">Nothing needs action.</td></tr>'}</tbody></table>
+  <div class="status">A job needs action until it has a logo and a placement, or a works order file uploaded. Open a job to fill it in or upload the works order the sales office made.</div></div>`;
 }
 function jobDetail(j){
   const o=j.own||{};const w=canWrite()&&j.src==='sage';
   const logoOpts=OWN.logos.filter(l=>!l.acct||l.acct===j.acct);
-  let h=`<div class="detail"><div class="grid">
+  let h=`<div class="detail">${j.logoImg?`<img class="logoimg" src="${esc(j.logoImg)}" style="float:right;margin-left:10px">`:''}<div class="grid">
    <div class="field"><label>Logo / design</label><input id="f_logo" list="logos" value="${esc(j.logo)}" ${w?'':'disabled'} placeholder="e.g. Klondyke main logo"><datalist id="logos">${logoOpts.map(l=>`<option value="${esc(l.name)}">`).join('')}</datalist></div>
-   <div class="field"><label>Placement</label><input id="f_place" value="${esc(j.place||j.sageTxt.join(' / '))}" ${w?'':'disabled'}></div>
-   <div class="field"><label>Stitch count (per garment)</label><input id="f_st" type="number" min="0" value="${j.stitches||''}" ${w?'':'disabled'}></div>
+   <div class="field"><label>Placement</label><input id="f_place" value="${esc(j.place)}" ${w?'':'disabled'} placeholder="${esc(j.sageTxt.join(' / '))}"></div>
    <div class="field"><label>Thread colours</label><input id="f_col" value="${esc(j.colours)}" ${w?'':'disabled'}></div>
-   <div class="field" style="grid-column:1/-1"><label>Notes for the EMB room</label><textarea id="f_notes" ${w?'':'disabled'}>${esc(j.notes)}</textarea></div></div>
-   <table style="margin-top:10px"><thead><tr><th>Garment</th><th class="num">Ordered</th><th class="num">To go</th><th>Stock (free)</th><th>Picked</th><th>Sage text</th></tr></thead><tbody>
-   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${l.free==null?'<span class="muted">not in stock file</span>':l.inStock?`<span class="pill p-stock">${l.free} free</span>`:`<span class="pill p-short">${l.free} free, short ${l.out-l.free}</span>`}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
+   <div class="field"><label>Notes for the EMB room</label><input id="f_notes" value="${esc(j.src==='sage'?j.notes:'')}" ${w?'':'disabled'}></div></div>
+   <table style="margin-top:10px"><thead><tr><th>Garment</th><th class="num">Ordered</th><th class="num">To go</th><th>Bin</th><th>Stock</th><th>Picked</th><th>Sage text</th></tr></thead><tbody>
+   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:''}</td><td>${l.onShelf?`<span class="pill p-stock">in stock${l.free!=null?' ('+l.free+' free)':''}</span>`:l.wait&&l.wait.length?`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:'<span class="muted">–</span>'}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
    <div class="actions">`;
   if(j.src==='sage'){
-    if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}',true)">${j.confirmed?'Save':'Confirm job'}</button>`;
+    if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}')">Save</button><label class="btn btn-grey" style="display:inline-block">Upload works order<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this)"></label>`;
     h+=`<button class="btn btn-grey" onclick="printJobs(['${esc(j.key)}'])">Print EMB WO</button>`;
-    if(w&&j.confirmed&&!j.doneAt)h+=`<button class="btn btn-grey" onclick="unconfirm('${esc(j.key)}')">Undo confirm</button>`;
-    h+=`<span class="muted">${j.confirmed?'Confirmed '+fdt(o.confirmedAt)+(o.confirmedBy?' by '+esc(o.confirmedBy):''):'Not yet confirmed by the sales office'}${j.printed?' · printed '+fdt(o.printedAt):''}${j.minutes?' · about '+j.minutes+' min on '+(MACHINES.find(m=>m.id===j.machine)||{name:'a 6-head machine'}).name:''}</span>`;
+    if(j.woFile)h+=`<a class="btn btn-grey" href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank">Open WO file: ${esc(j.woFile.name)}</a>`;
+    h+=`<span class="muted">${j.actioned?'Actioned '+fdt(o.actionedAt||(j.woFile&&j.woFile.at))+(o.actionedBy||(j.woFile&&j.woFile.by)?' by '+esc(o.actionedBy||j.woFile.by):''):'Needs: '+j.missing.join(' and ')}${j.printed?' · EMB WO printed '+fdt(o.printedAt):''}${j.style?' · logo and placement from the planner record '+esc(j.style.code):''}</span>`;
     if(!w)h+=`<span class="muted">View only on this PC.</span>`;
-  }else h+=`<span class="muted">Works order ${esc(j.ref)} in the <a href="https://luke5446.github.io/Tibard-Productionplan/" target="_blank">Production Plan</a>; pick and done marks are made there.</span>`;
-  h+=`<a class="muted" style="margin-left:auto" href="https://luke5446.github.io/SOPtracker/?so=${esc(j.doc)}" target="_blank">Open in Order tracker ↗</a></div></div>`;
+  }else h+=`<span class="muted">Works order ${esc(j.ref)} in the <a href="https://luke5446.github.io/Tibard-Productionplan/" target="_blank">Production Plan</a>; pick and done marks are made there.${j.style?' Logo and placement from its style record.':''}</span>`;
+  if(j.doc)h+=`<a class="muted" style="margin-left:auto" href="https://luke5446.github.io/SOPtracker/?so=${esc(j.doc)}" target="_blank">Open in Order tracker ↗</a>`;
+  h+=`</div></div>`;
   return h;
 }
-function saveJob(k,confirm){
+function saveJob(k){
   const j=JOBS.find(x=>x.key===k);if(!j)return;
-  const v={logo:val('f_logo'),place:val('f_place'),stitches:+val('f_st')||0,colours:val('f_col'),notes:val('f_notes')};
-  ownSave('EMB job '+j.doc+' '+j.kind+(confirm&&!j.confirmed?' confirmed':' updated'),d=>{
+  const v={logo:val('f_logo'),place:val('f_place'),colours:val('f_col'),notes:val('f_notes')};
+  ownSave('EMB job '+j.doc+' '+j.kind+' updated',d=>{
     const e=d.jobs[k]||{};Object.assign(e,v,{co:j.co,so:j.doc,kind:j.kind,cust:j.cust});
-    if(confirm&&!e.confirmedAt){e.confirmedAt=new Date().toISOString();e.confirmedBy=who()}
+    if(v.logo&&v.place&&!e.actionedAt){e.actionedAt=new Date().toISOString();e.actionedBy=who()}
+    if(v.logo&&!d.logos.some(l=>l.name.toLowerCase()===v.logo.toLowerCase()))d.logos.push({name:v.logo,acct:j.acct,cust:j.cust,place:v.place,stitches:0,at:new Date().toISOString()});
     d.jobs[k]=e;return true;
   },ok=>{if(ok){build();render()}});
 }
-function unconfirm(k){const j=JOBS.find(x=>x.key===k);if(!j||!confirm('Undo the confirmation of this job? It goes back to New.'))return;
-  ownSave('EMB job '+j.doc+' '+j.kind+' confirmation undone',d=>{const e=d.jobs[k];if(!e)return false;delete e.confirmedAt;delete e.confirmedBy;return true},ok=>{if(ok){build();render()}})}
+function uploadWO(k,inp){
+  const j=JOBS.find(x=>x.key===k);const f=inp.files&&inp.files[0];if(!j||!f)return;
+  if(f.size>20*1024*1024){alert('The file is over 20 MB.');return}
+  const safe=f.name.replace(/[^A-Za-z0-9._-]+/g,'_');
+  const path='wo/'+(j.co==='TIBARD'?'TIB':'OH')+'-'+j.doc.replace(/[^A-Za-z0-9]/g,'')+'-'+j.kind+'-'+safe;
+  const rd=new FileReader();rd.onload=()=>{const b64=String(rd.result).split(',')[1];
+    ownPutFile(path,b64,'Works order file for '+j.doc+' '+j.kind,ok=>{if(!ok)return;
+      ownSave('EMB job '+j.doc+' '+j.kind+' works order uploaded',d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.wo={path,name:f.name,at:new Date().toISOString(),by:who()};if(!e.actionedAt){e.actionedAt=e.wo.at;e.actionedBy=e.wo.by}return true},ok2=>{if(ok2){build();render()}})})};
+  rd.readAsDataURL(f);
+}
 const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
 function who(){let w='';try{w=localStorage.getItem('emb_who')||''}catch(e){}if(!w){w=prompt('Your name (kept on this PC, shown on the marks you make):','')||'';try{localStorage.setItem('emb_who',w)}catch(e){}}return w}
 
+/* ── pick list (warehouse) ──────────────────────────────────────────────── */
 function renderPick(){
-  const list=applyFilter(JOBS.filter(j=>j.confirmed&&j.status!=='done'&&j.pickState!=='all'));
+  const all=applyFilter(JOBS.filter(j=>j.status!=='done'&&!j.machine&&j.pickState!=='all'));
   const w=canWrite();
-  return `<div class="card"><h2>To pick for the EMB room <span class="r">${list.length} jobs · confirmed jobs with garments still to pick</span></h2>${filterBar()}
-  <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garment</th><th class="num">Qty</th><th>Stock</th><th>Picked</th><th>Due</th></tr></thead><tbody>
-  ${list.map(j=>j.lines.map((l,i)=>`<tr ${i===0?'style="border-top:2px solid var(--line)"':''}>${i===0?`<td rowspan="${j.lines.length}">${soCell(j)}<div style="margin-top:4px">${pill(j.status)}</div>${j.src==='sage'?`<div style="margin-top:6px"><button class="btn btn-grey btn-sm" onclick="printJobs(['${esc(j.key)}'])">Print</button></div>`:''}</td><td rowspan="${j.lines.length}">${esc(j.cust)}<div class="muted">${esc(j.ref)}</div></td><td rowspan="${j.lines.length}">${kindPill(j.kind)}<div class="muted">${esc(j.logo||j.sageTxt[0]||'')}</div></td>`:''}
-    <td><span class="code">${esc(l.base||l.code)}</span>${l.base&&l.base!==l.code?` <span class="muted">→ ${esc(l.code)}</span>`:''}<div class="desc">${esc(l.desc)}</div></td><td class="num"><b>${l.out}</b></td>
-    <td>${l.free==null?'<span class="muted">?</span>':l.inStock?`<span class="pill p-stock">${l.free} free</span>`:`<span class="pill p-short">short ${l.out-l.free}</span><div class="muted">${l.free} free · waiting on stock</div>`}</td>
+  const ready=all.filter(j=>j.status==='ready'&&j.src==='sage'),picking=all.filter(j=>j.status==='picking'||j.status==='part'),prod=all.filter(j=>j.status==='production'),wait=all.filter(j=>j.status==='waiting');
+  const ticked=[...TICK].filter(k=>ready.some(j=>j.key===k));
+  const lineRows=(j,showPick)=>j.lines.map((l,i)=>`<tr ${i===0?'style="border-top:2px solid var(--line)"':''}>${i===0?`<td rowspan="${j.lines.length}">${showPick==='tick'?`<input type="checkbox" class="chk" ${TICK.has(j.key)?'checked':''} onchange="tick('${esc(j.key)}',this.checked)"> `:''}${soCell(j)}<div style="margin-top:4px">${pill(j.status)}${j.actioned?'':' <span class="pill p-new">sales to action</span>'}</div>${j.src==='sage'?`<div style="margin-top:6px"><button class="btn btn-grey btn-sm" onclick="printPick(['${esc(j.key)}'])">${j.pickPrinted?'Reprint':'Print pick list'}</button></div>`:''}</td><td rowspan="${j.lines.length}">${esc(j.cust)}<div class="muted">${esc(j.ref)}</div></td><td rowspan="${j.lines.length}">${kindPill(j.kind)}${logoCell(j)}</td>`:''}
+    <td><span class="code">${esc(l.base||l.code)}</span>${l.base&&l.base!==l.code?` <span class="muted">→ ${esc(l.code)}</span>`:''}<div class="desc">${esc(l.desc)}</div></td><td class="num"><b>${l.out}</b></td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:'<span class="muted">–</span>'}</td>
+    <td>${l.onShelf?`<span class="pill p-stock">in stock</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))||'short'}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`}</td>
     <td>${l.picked?`<span class="pill p-pick">picked</span> <span class="muted">${fdt(l.pickedAt)}</span>${w&&j.src==='sage'?` <button class="btn btn-grey btn-sm" onclick="pickLine('${esc(j.key)}','${esc(l.key)}',0)">Undo</button>`:''}`:j.src==='sage'?(w?`<button class="btn btn-green btn-sm" onclick="pickLine('${esc(j.key)}','${esc(l.key)}',${l.out})">Picked</button>`:'<span class="muted">not picked</span>'):'<span class="muted">mark in the planner</span>'}</td>
-    ${i===0?`<td rowspan="${j.lines.length}">${dueCell(j)}</td>`:''}</tr>`).join('')).join('')||'<tr><td colspan="8" class="msg">Nothing to pick.</td></tr>'}</tbody></table>
-  <div class="status">A job with some garments picked and others short stays here as <b>Part picked</b>; when the stock lands it is still on this list, so the other half is never lost. ${w?'':'This PC is view only: set it up with the token to mark picks.'}</div></div>`;
+    ${i===0?`<td rowspan="${j.lines.length}">${dueCell(j)}${w&&j.src==='sage'&&j.lines.length>1?`<div style="margin-top:6px"><button class="btn btn-green btn-sm" onclick="pickAll('${esc(j.key)}')">All picked</button></div>`:''}</td>`:''}</tr>`).join('');
+  const head=`<thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garment</th><th class="num">Qty</th><th>Bin</th><th>Stock</th><th>Picked</th><th>Due</th></tr></thead>`;
+  const group=(title,sub,list,mode,extra)=>`<div class="card"><h2>${title} <span class="r">${list.length} jobs · ${sub}</span>${extra||''}</h2><table>${head}<tbody>${list.map(j=>lineRows(j,mode)).join('')||`<tr><td colspan="9" class="msg">None.</td></tr>`}</tbody></table></div>`;
+  return `<div class="tiles"><div class="tile ${FILTER.tile==='ready'?'on':''}" onclick="FILTER.tile=FILTER.tile==='ready'?'':'ready';render()"><b>${ready.length}</b><span>Ready to pick in full</span></div><div class="tile ${FILTER.tile==='picking'?'on':''}" onclick="FILTER.tile=FILTER.tile==='picking'?'':'picking';render()"><b>${picking.length}</b><span>Picking</span></div><div class="tile ${FILTER.tile==='prod'?'on':''}" onclick="FILTER.tile=FILTER.tile==='prod'?'':'prod';render()"><b>${prod.length}</b><span>Waiting on production WO</span></div><div class="tile ${FILTER.tile==='wait'?'on':''}" onclick="FILTER.tile=FILTER.tile==='wait'?'':'wait';render()"><b>${wait.length}</b><span>Waiting on stock</span></div></div>
+  <div class="card">${filterBar()}</div>
+  ${(!FILTER.tile||FILTER.tile==='ready')?group('Ready to pick in full','every garment on the shelf, oldest promised date served first',ready,'tick',`<button class="btn btn-gold btn-sm" ${ticked.length?'':'disabled'} onclick="printPick(${JSON.stringify(ticked).replace(/"/g,'&quot;')})">Print pick lists for ${ticked.length} ticked</button><button class="btn btn-grey btn-sm" onclick="tickAll(${JSON.stringify(ready.map(j=>j.key)).replace(/"/g,'&quot;')})">Tick all</button>`):''}
+  ${(!FILTER.tile||FILTER.tile==='picking')?group('Picking','pick list printed, garments being picked',picking,''):''}
+  ${(!FILTER.tile||FILTER.tile==='prod')?group('Waiting on a production works order','special makes and planner works orders; pick the rest when it lands',prod,''):''}
+  ${(!FILTER.tile||FILTER.tile==='wait')?group('Waiting on stock','back-to-back PO, container or nothing on order',wait,''):''}
+  <div class="status">Stock is served to the oldest promised date first, the Order tracker's rule, with Sage's allocation respected. Printing a pick list puts the job in <b>Picking</b>. Bins come from BinFinder's stock file${BIN.ok?'':' (not read)'}. ${w?'':'This PC is view only: set it up with the token to print and mark picks.'}</div>`;
 }
+function tick(k,on){if(on)TICK.add(k);else TICK.delete(k);render()}
+function tickAll(keys){const all=keys.every(k=>TICK.has(k));keys.forEach(k=>all?TICK.delete(k):TICK.add(k));render()}
 function pickLine(jk,lk,qty){
   const j=JOBS.find(x=>x.key===jk);if(!j)return;
   ownSave('EMB pick '+j.doc+' '+lk.split('-').pop()+(qty?' picked':' undone'),d=>{const e=d.jobs[jk]||(d.jobs[jk]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.picks=e.picks||{};
     if(qty)e.picks[lk]={qty,at:new Date().toISOString(),by:who()};else delete e.picks[lk];return true},ok=>{if(ok){build();render()}});
 }
+function pickAll(jk){
+  const j=JOBS.find(x=>x.key===jk);if(!j)return;
+  ownSave('EMB pick '+j.doc+' '+j.kind+' all picked',d=>{const e=d.jobs[jk]||(d.jobs[jk]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.picks=e.picks||{};const at=new Date().toISOString(),by=who();
+    j.lines.forEach(l=>{if(!e.picks[l.key])e.picks[l.key]={qty:l.out,at,by}});return true},ok=>{if(ok){build();render()}});
+}
+function printPick(keys){
+  const js=keys.map(k=>JOBS.find(j=>j.key===k)).filter(Boolean);if(!js.length)return;
+  document.getElementById('print').innerHTML=js.map(pickDoc).join('');
+  window.print();
+  TICK.clear();
+  if(canWrite())ownSave('Pick lists printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});if(!e.pickPrintedAt)e.pickPrintedAt=new Date().toISOString();e.pickPrintedLast=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
+  else render();
+}
+function pickDoc(j){
+  return `<div class="wop"><div class="hd"><div><h1>Pick list for ${j.kind==='EMB'?'embroidery':'transfer'}</h1><div>${j.co==='TIBARD'?'Tibard':'Oliver Harvey'} · printed ${fdt(new Date().toISOString())}</div></div><div class="k">${esc(j.src==='sage'?'SO '+j.doc:j.ref)}</div></div>
+  <div class="kv"><div><b>Customer</b> ${esc(j.cust)}</div><div><b>Order ref</b> ${esc(j.ref)}</div><div><b>Due in EMB</b> ${fdl(j.due)}</div><div><b>Promised</b> ${fdl(j.promised)}</div><div><b>Logo</b> ${esc(j.logo||'see EMB works order')}</div><div><b>Placement</b> ${esc(j.place||j.sageTxt.join(' / ')||'–')}</div></div>
+  <table><thead><tr><th>Bin</th><th>Stock code</th><th>Description</th><th>Qty</th><th>Picked</th></tr></thead><tbody>${j.lines.slice().sort((a,b)=>(a.bin||'~').localeCompare(b.bin||'~')).map(l=>`<tr><td class="bigbin">${esc(l.bin||'?')}</td><td><b>${esc(l.base||l.code)}</b></td><td>${esc(l.desc)}</td><td style="text-align:right;font-size:16px"><b>${l.out}</b></td><td>${l.onShelf?'☐':'waiting: '+esc(waitText(l))}</td></tr>`).join('')}</tbody></table>
+  ${j.notes&&j.src==='sage'?`<p style="margin-top:8px"><b>Notes:</b> ${esc(j.notes)}</p>`:''}
+  <div class="sign"><div>Picked by / date</div><div>Handed to EMB / date</div><div>Checked</div></div></div>`;
+}
 
+/* ── EMB queue ──────────────────────────────────────────────────────────── */
 function renderEmb(){
-  const list=applyFilter(JOBS.filter(j=>j.confirmed&&j.status!=='done'));
+  const list=applyFilter(JOBS.filter(j=>j.status!=='done'));
   const w=canWrite();
   const byM={};list.forEach(j=>{if(j.machine)byM[j.machine]=(byM[j.machine]||0)+j.minutes});
   return `<div class="tiles">${MACHINES.map(m=>`<div class="tile"><b>${list.filter(j=>j.machine===m.id).length}</b><span>${m.name}${byM[m.id]?' · '+Math.round(byM[m.id]/60*10)/10+' h':''}</span></div>`).join('')}</div>
   <div class="card"><h2>EMB queue <span class="r">${list.length} jobs · picked first, then by due date</span></h2>${filterBar()}
-  <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Picked</th><th>Due</th><th class="num">Est. min</th><th>Machine</th><th></th></tr></thead><tbody>
-  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}<div class="muted">${esc(j.logo||j.sageTxt[0]||'')}</div>${j.place?`<div class="muted">${esc(j.place)}</div>`:''}</td><td>${linesCell(j)}</td>
-   <td>${j.pickState==='all'?'<span class="pill p-pick">Picked</span>':j.pickState==='part'?'<span class="pill p-part">Part picked</span>':'<span class="pill p-grey">Not picked yet</span>'}${j.shortLines?`<div class="muted">${j.shortLines} line${j.shortLines>1?'s':''} waiting on stock</div>`:''}</td>
-   <td>${dueCell(j)}</td><td class="num">${j.minutes||'<span class="muted">add stitches</span>'}</td>
+  <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Picked</th><th>Due</th><th>Stitches</th><th class="num">Est. min</th><th>Machine</th><th></th></tr></thead><tbody>
+  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted">${esc(j.place)}</div>`:''}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td>
+   <td>${j.pickState==='all'?'<span class="pill p-pick">Picked</span>':j.pickState==='part'?'<span class="pill p-part">Part picked</span>':pill(j.status)}${j.shortLines&&j.pickState!=='all'?`<div class="muted">${j.shortLines} line${j.shortLines>1?'s':''} not on the shelf</div>`:''}</td>
+   <td>${dueCell(j)}</td>
+   <td onclick="event.stopPropagation()"><input type="number" min="0" style="width:80px;border:1px solid var(--line);border-radius:5px;padding:4px" value="${j.stitches||''}" ${w?'':'disabled'} onchange="setStitches('${esc(j.key)}',this.value)">${j.stitchesFrom==='memory'?'<div class="muted">from logo memory</div>':''}</td>
+   <td class="num">${j.minutes||'<span class="muted">–</span>'}</td>
    <td onclick="event.stopPropagation()">${j.src==='sage'?`<select ${w?'':'disabled'} onchange="setMachine('${esc(j.key)}',this.value)"><option value="">– choose –</option>${MACHINES.map(m=>`<option value="${m.id}" ${j.machine===m.id?'selected':''}>${m.name}</option>`).join('')}</select>`:`<span class="muted">${j.machine?'Machine '+esc(j.machine):'set in the planner'}</span>`}</td>
-   <td onclick="event.stopPropagation()">${j.src==='sage'&&w?`<button class="btn btn-green btn-sm" onclick="markDone('${esc(j.key)}')">Done</button>`:''}</td>`)).join('')||'<tr><td colspan="9" class="msg">No jobs in the queue.</td></tr>'}</tbody></table>
-  <div class="status">Time = stitches ÷ ${SET.spm} per minute per garment + ${SET.setup} min set-up per product, shared over the machine's heads. Marking <b>Done</b> releases the order for dispatch in the Order tracker (phase 3).</div></div>`;
+   <td onclick="event.stopPropagation()">${j.src==='sage'&&w?`<button class="btn btn-green btn-sm" onclick="markDone('${esc(j.key)}')">Done</button>`:''}</td>`,10)).join('')||'<tr><td colspan="10" class="msg">No jobs in the queue.</td></tr>'}</tbody></table>
+  <div class="status">Time = stitches ÷ ${SET.spm} per minute per garment + ${SET.setup} min set-up per product, shared over the machine's heads. A stitch count typed here is offered to remember against the job's logo for next time.</div></div>`;
+}
+function setStitches(k,v){
+  const j=JOBS.find(x=>x.key===k);if(!j)return;const n=+v||0;
+  let remember=false,name=j.logo;
+  if(n>0){if(!name){name=prompt('Remember this stitch count for which logo? (leave blank to keep it on this job only)','')||'';}
+    else remember=confirm('Remember '+n+' stitches for "'+name+'" so the next order gets it automatically?');
+    if(name&&!j.logo)remember=true}
+  ownSave('EMB job '+j.doc+' '+j.kind+' stitches '+n,d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.stitches=n;if(name&&!e.logo&&!j.logo)e.logo=name;
+    if(remember&&name){let l=d.logos.find(x=>x.name.toLowerCase()===name.toLowerCase());if(!l){l={name,acct:j.acct,cust:j.cust,place:j.place||'',at:new Date().toISOString()};d.logos.push(l)}l.stitches=n;l.stitchesAt=new Date().toISOString()}
+    return true},ok=>{if(ok){build();render()}});
 }
 function setMachine(k,m){const j=JOBS.find(x=>x.key===k);if(!j)return;
   ownSave('EMB job '+j.doc+' '+j.kind+(m?' on machine '+m:' taken off machine'),d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.machine=m;e.machineAt=m?new Date().toISOString():'';return true},ok=>{if(ok){build();render()}})}
@@ -407,7 +539,13 @@ function renderDone(){
   const list=applyFilter(JOBS.filter(j=>j.status==='done')).sort((a,b)=>(b.doneAt||'').localeCompare(a.doneAt||''));
   return `<div class="card"><h2>Done, awaiting despatch <span class="r">${list.length} jobs · a job leaves when Sage shows it despatched</span></h2>${filterBar()}
   <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Machine</th><th>Done</th><th></th></tr></thead><tbody>
-  ${list.map(j=>`<tr><td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}</td><td>${linesCell(j)}</td><td>${esc((MACHINES.find(m=>m.id===j.machine)||{}).name||j.machine||'')}</td><td>${fdt(j.doneAt)}${j.own&&j.own.doneBy?' · '+esc(j.own.doneBy):''}</td><td>${canWrite()&&j.src==='sage'?`<button class="btn btn-grey btn-sm" onclick="undoDone('${esc(j.key)}')">Undo</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="msg">Nothing done yet.</td></tr>'}</tbody></table></div>`;
+  ${list.map(j=>`<tr><td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}</td><td>${linesCell(j)}</td><td>${esc((MACHINES.find(m=>m.id===j.machine)||{}).name||j.machine||'')}</td><td>${fdt(j.doneAt)}${j.own&&j.own.doneBy?' · '+esc(j.own.doneBy):''}</td><td>${canWrite()&&j.src==='sage'?`<button class="btn btn-grey btn-sm" onclick="undoDone('${esc(j.key)}')">Undo</button>`:''}</td></tr>`).join('')||'<tr><td colspan="7" class="msg">Nothing done yet.</td></tr>'}</tbody></table></div>`;
+}
+function renderLogos(){
+  const list=OWN.logos.slice().sort((a,b)=>(a.cust||'').localeCompare(b.cust||'')||a.name.localeCompare(b.name));
+  return `<div class="card"><h2>Logo memory <span class="r">${list.length} logos · names and stitch counts remembered from jobs; images in phase 3</span></h2>
+  <table><thead><tr><th>Customer</th><th>Logo</th><th>Placement</th><th class="num">Stitches</th><th>Remembered</th></tr></thead><tbody>
+  ${list.map(l=>`<tr><td>${esc(l.cust||l.acct||'')}</td><td>${esc(l.name)}</td><td>${esc(l.place||'')}</td><td class="num">${l.stitches||'–'}</td><td class="muted">${fdt(l.stitchesAt||l.at)}</td></tr>`).join('')||'<tr><td colspan="5" class="msg">Nothing remembered yet. Type a logo name on a job, or a stitch count in the EMB queue.</td></tr>'}</tbody></table></div>`;
 }
 function renderSettings(){
   return `<div class="card"><h2>Settings <span class="r">kept on this PC</span></h2><div class="detail"><div class="grid">
@@ -416,7 +554,7 @@ function renderSettings(){
   <div class="field"><label>Lead time Tibard (working days)</label><input id="s_lt" type="number" value="${SET.leadTib}"></div>
   <div class="field"><label>Lead time Oliver Harvey (working days)</label><input id="s_lo" type="number" value="${SET.leadOH}"></div></div>
   <div class="actions"><button class="btn btn-gold" onclick="saveSet()">Save</button><span class="muted">Due date = Sage order date + lead time. Machines: 1 to 4 six heads, 5 single head, DTF twin and single presses.</span></div></div>
-  <div class="msg">Feeds: Order tracker ${SOP.ok?'read ('+fdt(SOP.ts)+')':'<b>not read</b>'} · Production Plan ${PP.ok?'read ('+fdt(PP.savedAt)+')':'<b>not read</b>'} · warehouse log ${WH.ok?'read':'<b>not read</b>'} · emb.json ${OWN.ok?'read ('+(OWN.savedAt?fdt(OWN.savedAt):'empty')+', '+OWN.source+')':'<b>not read</b>'} · v${VER}</div></div>`;
+  <div class="msg">Feeds: Order tracker ${SOP.ok?'read ('+fdt(SOP.ts)+')':'<b>not read</b>'} · Production Plan ${PP.ok?'read ('+fdt(PP.savedAt)+')':'<b>not read</b>'} · style master ${BRAND.ok?BRAND.styles.length+' branded records':'<b>not read</b>'} · Stock Planner ${SP.ok?'read':'<b>not read</b>'} · warehouse log ${WH.ok?'read':'<b>not read</b>'} · BinFinder ${BIN.ok?BIN.map.size+' bins':'<b>not read</b>'} · emb.json ${OWN.ok?'read ('+(OWN.savedAt?fdt(OWN.savedAt):'empty')+', '+OWN.source+')':'<b>not read</b>'} · v${VER}</div></div>`;
 }
 function saveSet(){SET={spm:+val('s_spm')||900,setup:+val('s_setup')||10,leadTib:+val('s_lt')||10,leadOH:+val('s_lo')||7};lsSet(LS_SET,SET);build();render()}
 
@@ -428,13 +566,13 @@ function printJobs(keys){
   if(canWrite())ownSave('EMB WO printed '+js.map(j=>j.doc).join(', '),d=>{let n=0;js.forEach(j=>{if(j.src!=='sage')return;const e=d.jobs[j.key]||(d.jobs[j.key]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.printedAt=new Date().toISOString();n++});return n>0},ok=>{if(ok){build();render()}});
 }
 function wop(j){
-  const logo=OWN.logos.find(l=>l.name===j.logo);
   return `<div class="wop"><div class="hd"><div><h1>${j.kind==='EMB'?'Embroidery':'Transfer'} works order</h1><div>${j.co==='TIBARD'?'Tibard':'Oliver Harvey'} · printed ${fdt(new Date().toISOString())}</div></div><div class="k">${esc(j.src==='sage'?'SO '+j.doc:j.ref)}</div></div>
   <div class="kv"><div><b>Customer</b> ${esc(j.cust)}</div><div><b>Order ref</b> ${esc(j.ref)}</div><div><b>Order date</b> ${fdl(j.added)}</div><div><b>Due in EMB</b> ${fdl(j.due)}</div><div><b>Promised to customer</b> ${fdl(j.promised)}</div><div><b>Stitch count</b> ${j.stitches||'–'}</div><div><b>Thread colours</b> ${esc(j.colours||'–')}</div><div><b>Est. time</b> ${j.minutes?j.minutes+' min':'–'}</div></div>
   <div class="big">Logo: ${esc(j.logo||'see Sage text below')}</div><div class="big">Placement: ${esc(j.place||j.sageTxt.join(' / ')||'–')}</div>
+  ${j.woFile?`<p>Sales office works order file: ${esc(j.woFile.name)}</p>`:''}
   <table><thead><tr><th>Stock code</th><th>Description</th><th>Qty</th><th>Sage instruction</th><th>Picked</th></tr></thead><tbody>${j.lines.map(l=>`<tr><td><b>${esc(l.base||l.code)}</b>${l.base&&l.base!==l.code?'<br>→ '+esc(l.code):''}</td><td>${esc(l.desc)}</td><td style="text-align:right;font-size:16px"><b>${l.out}</b></td><td>${(l.txt||[]).map(esc).join('<br>')}</td><td>${l.picked?'✔':'☐'}</td></tr>`).join('')}</tbody></table>
-  ${j.notes?`<p style="margin-top:8px"><b>Notes:</b> ${esc(j.notes)}</p>`:''}
-  <div class="logo">${logo&&logo.file?`<img src="${esc(logo.file)}" alt="logo">`:'Logo image: attach or draw here'}</div>
+  ${j.notes&&j.src==='sage'?`<p style="margin-top:8px"><b>Notes:</b> ${esc(j.notes)}</p>`:''}
+  <div class="logo">${j.logoImg?`<img src="${esc(j.logoImg)}" alt="logo">`:'Logo image: attach or draw here'}</div>
   <div class="sign"><div>Picked by / date</div><div>Machine / operator</div><div>Checked / date</div></div></div>`;
 }
 loadAll();

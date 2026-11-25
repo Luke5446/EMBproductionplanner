@@ -55,6 +55,7 @@ doneAt/By. `logos[]`: name, acct, cust, place, stitches, stitchesAt, file (phase
 Works order files: `wo/<TIB|OH>-<SO>-<kind>-<file name>`. `users[]`: key, name, edits[], pinHash.
 
 ## Changelog
+- v0.4 (25 Nov 2026) Actioned tab with Undo; works order files per garment (or one for all with the tick); a job is actioned when every garment has a file, or logo + placement are saved, or Mark actioned is pressed. `jobs[key].wos[]` = {path,name,at,by,lines[]} (an old `wo` is read as covering every garment).
 - v0.2 (25 Nov 2026) Orders shows only jobs needing action, sales person filter, works order
   file upload; stitch count moved to the EMB queue and remembered per logo; pick list works out
   stock (oldest promised first, b2b POs, planner WOs, containers), bins from BinFinder, ready list

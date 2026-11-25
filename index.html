@@ -92,7 +92,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.3.1';
+const VER='0.4';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -369,14 +369,18 @@ function status(j){
   j.logo=o.logo||(st?(st.customer?st.customer+' logo':'Logo on '+st.code):'');
   j.place=o.place||(st?st.brandPlace:'');
   j.logoImg=(logoMem(j.logo)||{}).file||(st?st.logoImg:'');
-  j.colours=o.colours||'';j.notes=o.notes||'';j.woFile=o.wo||null;
+  j.colours=o.colours||'';j.notes=o.notes||'';
+  // works order files: o.wos = [{path,name,at,by,lines:[lineKey...]}] (an old o.wo covers every garment)
+  j.wos=(o.wos||[]).slice();if(o.wo)j.wos.unshift(Object.assign({lines:j.lines.map(l=>l.key)},o.wo));
+  j.lines.forEach(l=>{l.wos=j.wos.filter(w=>(w.lines||[]).includes(l.key))});j.woFile=j.wos[0]||null;
   j.printed=!!o.printedAt;j.pickPrinted=!!o.pickPrintedAt;
   const mem=logoMem(j.logo);j.stitches=o.stitches||(mem?mem.stitches||0:0);j.stitchesFrom=o.stitches?'job':mem&&mem.stitches?'memory':'';
   if(j.src==='sage'){
     j.machine=o.machine||'';j.doneAt=o.doneAt||'';
     j.lines.forEach(l=>{const p=(o.picks||{})[l.key];l.picked=!!p;l.pickedAt=p&&p.at;l.pickedQty=p?p.qty:0});
-    j.actioned=!!o.actionedAt||!!j.woFile||(!!j.logo&&!!j.place);
-    j.missing=[];if(!j.woFile){if(!j.logo)j.missing.push('logo');if(!j.place)j.missing.push('placement')}
+    j.actioned=!!o.actionedAt;
+    j.missing=[];const noWo=j.lines.filter(l=>!l.wos.length);
+    if(noWo.length){if(!j.logo)j.missing.push('logo');if(!j.place)j.missing.push('placement');if(j.missing.length&&noWo.length<j.lines.length)j.missing=noWo.map(l=>'WO for '+l.code)}
   }else{j.actioned=true;j.missing=[];j.notes=j.notes||'Works order in the Production Plan'}
   const picked=j.lines.filter(l=>l.picked).length;
   j.pickState=picked===0?'none':picked===j.lines.length?'all':'part';
@@ -405,7 +409,7 @@ const kindPill=k=>`<span class="pill ${k==='EMB'?'p-emb':'p-tr'}">${k}</span>`;
 const waitText=l=>(l.wait||[]).map(x=>x.t==='wo'?`WO ${esc(x.ref)}${x.due?' due '+fdl(pd(x.due)):''}`:x.t==='smpend'?'special make, no WO yet':x.t==='po'?`PO ${esc(x.ref)}${x.sup?' '+esc(x.sup):''}${x.date?' due '+fdl(pd(x.date)):''}`:x.t==='cont'?`container ${esc(x.ref)}${x.date?' '+fdl(pd(x.date)):''}`:x.t==='hold'?'order on hold':'nothing on order').join(', ');
 
 /* ── render ─────────────────────────────────────────────────────────────── */
-const TABS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['logos','Logos'],['settings','Settings']];
+const TABS=[['orders','Orders'],['actioned','Actioned'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['logos','Logos'],['settings','Settings']];
 function render(){
   const live=JOBS.filter(j=>j.status!=='done');
   const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready').length,emb:live.filter(j=>!j.machine&&j.pickState==='all').length};
@@ -418,7 +422,7 @@ function render(){
   if(!SOP.ok)h+=`<div class="err">The Order tracker's data could not be read${SOP.err?' ('+esc(SOP.err)+')':''}. Jobs come from its daily Sage paste.</div>`;
   if(!PP.ok)h+=`<div class="warn">Production Plan not read${PP.err?' ('+esc(PP.err)+')':''}: works orders are missing.</div>`;
   if(!OWN.ok&&OWN.err)h+=`<div class="warn">emb.json not read (${esc(OWN.err)}): marks made on this app are not shown.</div>`;
-  h+=({orders:renderOrders,pick:renderPick,emb:renderEmb,done:renderDone,logos:renderLogos,settings:renderSettings}[TAB]||renderOrders)();
+  h+=({orders:renderOrders,actioned:renderActioned,pick:renderPick,emb:renderEmb,done:renderDone,logos:renderLogos,settings:renderSettings}[TAB]||renderOrders)();
   document.getElementById('main').innerHTML=h;
 }
 // re-render while typing in the search box without losing the cursor
@@ -447,8 +451,16 @@ function renderOrders(){
    <label><input type="checkbox" class="chk" ${FILTER.all?'checked':''} onchange="FILTER.all=this.checked;render()"> show actioned too</label>`;
   return `<div class="card"><h2>Orders needing action <span class="r">${show.length} of ${base.length} jobs · sales office</span></h2>${filterBar(extra)}
   <table><thead><tr><th>Order</th><th>Customer · put on by</th><th>Job</th><th>Garments</th><th>Sage says</th><th>Missing</th><th>Due</th><th>Stock</th></tr></thead><tbody>
-  ${show.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div><div class="muted">${esc(j.user)}</div></td><td>${kindPill(j.kind)}${logoCell(j)}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td><td>${j.sageTxt.map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')||`<span class="muted">${j.markers.map(m=>esc(m.desc)).join('; ')||'order ref only'}</span>`}</td><td>${j.actioned?'<span class="pill p-done">actioned</span>':j.missing.map(m=>`<span class="pill p-new">${m}</span>`).join(' ')}</td><td>${dueCell(j)}</td><td>${pill(j.status)}</td>`,8)).join('')||'<tr><td colspan="8" class="msg">Nothing needs action.</td></tr>'}</tbody></table>
-  <div class="status">A job needs action until it has a logo and a placement, or a works order file uploaded. Open a job to fill it in or upload the works order the sales office made.</div></div>`;
+  ${show.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div><div class="muted">${esc(j.user)}</div></td><td>${kindPill(j.kind)}${logoCell(j)}${j.wos.map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank" onclick="event.stopPropagation()">${esc(x.name.length>28?x.name.slice(0,25)+'…':x.name)} ↗</a></div>`).join('')}</td><td>${linesCell(j)}</td><td>${j.sageTxt.map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')||`<span class="muted">${j.markers.map(m=>esc(m.desc)).join('; ')||'order ref only'}</span>`}</td><td>${j.actioned?'<span class="pill p-done">actioned</span>':j.missing.map(m=>`<span class="pill p-new">${m}</span>`).join(' ')}</td><td>${dueCell(j)}</td><td>${pill(j.status)}</td>`,8)).join('')||'<tr><td colspan="8" class="msg">Nothing needs action.</td></tr>'}</tbody></table>
+  <div class="status">A job needs action until every garment has a works order file, or a logo and placement are typed and saved. Open a job to upload one file for all garments, or one per garment when the logos differ. Actioned jobs move to the Actioned tab, where Undo brings them back.</div></div>`;
+}
+function renderActioned(){
+  const list=applyFilter(JOBS.filter(j=>j.src==='sage'&&j.actioned&&(!FILTER.user||j.user===FILTER.user))).sort((a,b)=>((b.own||{}).actionedAt||'').localeCompare((a.own||{}).actionedAt||''));
+  const users=[...new Set(JOBS.filter(j=>j.src==='sage').map(j=>j.user).filter(Boolean))].sort();
+  const w=can('orders');
+  return `<div class="card"><h2>Actioned orders <span class="r">${list.length} jobs · newest first; Undo puts a job back on the Orders tab</span></h2>${filterBar(`<select onchange="FILTER.user=this.value;render()"><option value="">Every sales person</option>${users.map(u=>`<option ${FILTER.user===u?'selected':''}>${esc(u)}</option>`).join('')}</select>`)}
+  <table><thead><tr><th>Order</th><th>Customer · put on by</th><th>Job</th><th>Garments</th><th>Works order files</th><th>Actioned</th><th>Stock</th><th></th></tr></thead><tbody>
+  ${list.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div><div class="muted">${esc(j.user)}</div></td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted clip" title="${esc(j.place)}">${esc(j.place)}</div>`:''}</td><td>${linesCell(j)}</td><td>${j.wos.map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank" onclick="event.stopPropagation()">${esc(x.name)} ↗</a></div>`).join('')||'<span class="muted">logo and placement typed</span>'}</td><td>${fdt(j.own.actionedAt)}${j.own.actionedBy?'<div class="muted">'+esc(j.own.actionedBy)+'</div>':''}</td><td>${pill(j.status)}</td><td onclick="event.stopPropagation()">${w?`<button class="btn btn-grey btn-sm" onclick="unaction('${esc(j.key)}')">Undo</button>`:''}</td>`,8)).join('')||'<tr><td colspan="8" class="msg">Nothing actioned yet.</td></tr>'}</tbody></table></div>`;
 }
 function jobDetail(j){
   const o=j.own||{};const w=can('orders')&&j.src==='sage';
@@ -458,14 +470,16 @@ function jobDetail(j){
    <div class="field"><label>Placement</label><input id="f_place" value="${esc(j.place)}" ${w?'':'disabled'} placeholder="${esc(j.sageTxt.join(' / '))}"></div>
    <div class="field"><label>Thread colours</label><input id="f_col" value="${esc(j.colours)}" ${w?'':'disabled'}></div>
    <div class="field"><label>Notes for the EMB room</label><input id="f_notes" value="${esc(j.src==='sage'?j.notes:'')}" ${w?'':'disabled'}></div></div>
-   <table style="margin-top:10px"><thead><tr><th>Garment</th><th class="num">Ordered</th><th class="num">To go</th><th>Bin</th><th>Stock</th><th>Picked</th><th>Sage text</th></tr></thead><tbody>
-   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:''}</td><td>${l.onShelf?`<span class="pill p-stock">in stock${l.free!=null?' ('+l.free+' free)':''}</span>`:l.wait&&l.wait.length?`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:'<span class="muted">–</span>'}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
+   ${j.src==='sage'&&w?`<div class="actions" style="margin-top:8px"><label><input type="checkbox" class="chk" id="f_same" ${j.lines.length>1?'':'checked'}> same works order for every garment</label><label class="btn btn-grey btn-sm" style="display:inline-block">Upload works order (all garments)<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this,'')"></label><span class="muted">or upload one per garment in the table</span></div>`:''}
+   <table style="margin-top:10px"><thead><tr><th>Garment</th><th class="num">Ordered</th><th class="num">To go</th><th>Works order file</th><th>Bin</th><th>Stock</th><th>Picked</th><th>Sage text</th></tr></thead><tbody>
+   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${(l.wos||[]).map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank">${esc(x.name)}</a>${w?` <a href="#" onclick="event.preventDefault();removeWO('${esc(j.key)}','${esc(x.path)}')" title="remove">✕</a>`:''}</div>`).join('')}${j.src==='sage'&&w?`<label class="btn btn-grey btn-sm" style="display:inline-block;margin-top:3px">Upload<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this,'${esc(l.key)}')"></label>`:j.src==='sage'&&!(l.wos||[]).length?'<span class="muted">none</span>':''}</td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:''}</td><td>${l.onShelf?`<span class="pill p-stock">in stock${l.free!=null?' ('+l.free+' free)':''}</span>`:l.wait&&l.wait.length?`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:'<span class="muted">–</span>'}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
    <div class="actions">`;
   if(j.src==='sage'){
-    if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}')">Save</button><label class="btn btn-grey" style="display:inline-block">Upload works order<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this)"></label>`;
+    if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}')">Save</button>`;
+    if(w&&!j.actioned)h+=`<button class="btn btn-green" onclick="actionJob('${esc(j.key)}')" title="Mark actioned as it stands">Mark actioned</button>`;
+    if(w&&j.actioned)h+=`<button class="btn btn-grey" onclick="unaction('${esc(j.key)}')">Undo actioned</button>`;
     h+=`<button class="btn btn-grey" onclick="printJobs(['${esc(j.key)}'])">Print EMB WO</button>`;
-    if(j.woFile)h+=`<a class="btn btn-grey" href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank">Open WO file: ${esc(j.woFile.name)}</a>`;
-    h+=`<span class="muted">${j.actioned?'Actioned '+fdt(o.actionedAt||(j.woFile&&j.woFile.at))+(o.actionedBy||(j.woFile&&j.woFile.by)?' by '+esc(o.actionedBy||j.woFile.by):''):'Needs: '+j.missing.join(' and ')}${j.printed?' · EMB WO printed '+fdt(o.printedAt):''}${j.style?' · logo and placement from the planner record '+esc(j.style.code):''}</span>`;
+    h+=`<span class="muted">${j.actioned?'Actioned '+fdt(o.actionedAt)+(o.actionedBy?' by '+esc(o.actionedBy):''):'Needs: '+(j.missing.join(', ')||'a Save or Mark actioned')}${j.printed?' · EMB WO printed '+fdt(o.printedAt):''}${j.style?' · logo and placement from the planner record '+esc(j.style.code):''}</span>`;
     if(!w)h+=`<span class="muted">View only: sign in as the sales office to edit.</span>`;
   }else h+=`<span class="muted">Works order ${esc(j.ref)} in the <a href="https://luke5446.github.io/Tibard-Productionplan/" target="_blank">Production Plan</a>; pick and done marks are made there.${j.style?' Logo and placement from its style record.':''}</span>`;
   if(j.doc)h+=`<a class="muted" style="margin-left:auto" href="https://luke5446.github.io/SOPtracker/?so=${esc(j.doc)}" target="_blank">Open in Order tracker ↗</a>`;
@@ -477,21 +491,35 @@ function saveJob(k){
   const v={logo:val('f_logo'),place:val('f_place'),colours:val('f_col'),notes:val('f_notes')};
   ownSave('EMB job '+j.doc+' '+j.kind+' updated',d=>{
     const e=d.jobs[k]||{};Object.assign(e,v,{co:j.co,so:j.doc,kind:j.kind,cust:j.cust});
-    if(v.logo&&v.place&&!e.actionedAt){e.actionedAt=new Date().toISOString();e.actionedBy=who()}
+    const covered=j.lines.every(l=>l.wos.length);if((covered||(v.logo&&v.place))&&!e.actionedAt){e.actionedAt=new Date().toISOString();e.actionedBy=who()}
     if(v.logo&&!d.logos.some(l=>l.name.toLowerCase()===v.logo.toLowerCase()))d.logos.push({name:v.logo,acct:j.acct,cust:j.cust,place:v.place,stitches:0,at:new Date().toISOString()});
     d.jobs[k]=e;return true;
   },ok=>{if(ok){build();render()}});
 }
-function uploadWO(k,inp){
-  const j=JOBS.find(x=>x.key===k);const f=inp.files&&inp.files[0];if(!j||!f)return;
+// upload a works order file for one garment line (lineKey) or, with "same for all" ticked, for every garment
+function uploadWO(k,inp,lineKey){
+  const j=JOBS.find(x=>x.key===k);const f=inp.files&&inp.files[0];if(!j||!f||!can('orders'))return;
   if(f.size>20*1024*1024){alert('The file is over 20 MB.');return}
+  const all=!lineKey||(document.getElementById('f_same')&&document.getElementById('f_same').checked);
+  const lines=all?j.lines.map(l=>l.key):[lineKey];
+  const ln=j.lines.find(l=>l.key===lineKey);
   const safe=f.name.replace(/[^A-Za-z0-9._-]+/g,'_');
-  const path='wo/'+(j.co==='TIBARD'?'TIB':'OH')+'-'+j.doc.replace(/[^A-Za-z0-9]/g,'')+'-'+j.kind+'-'+safe;
+  const path='wo/'+(j.co==='TIBARD'?'TIB':'OH')+'-'+j.doc.replace(/[^A-Za-z0-9]/g,'')+'-'+j.kind+(all?'':'-'+(ln?ln.code.replace(/[^A-Za-z0-9]/g,''):'line'))+'-'+safe;
   const rd=new FileReader();rd.onload=()=>{const b64=String(rd.result).split(',')[1];
-    ownPutFile(path,b64,'Works order file for '+j.doc+' '+j.kind,ok=>{if(!ok)return;
-      ownSave('EMB job '+j.doc+' '+j.kind+' works order uploaded',d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.wo={path,name:f.name,at:new Date().toISOString(),by:who()};if(!e.actionedAt){e.actionedAt=e.wo.at;e.actionedBy=e.wo.by}return true},ok2=>{if(ok2){build();render()}})})};
+    ownPutFile(path,b64,'Works order file for '+j.doc+' '+j.kind+(all?'':' '+(ln?ln.code:'')),ok=>{if(!ok)return;
+      ownSave('EMB job '+j.doc+' '+j.kind+' works order uploaded',d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.wos=e.wos||[];
+        if(e.wo){e.wos.unshift(Object.assign({lines:j.lines.map(l=>l.key)},e.wo));delete e.wo}
+        e.wos=e.wos.filter(w=>w.path!==path);e.wos.push({path,name:f.name,at:new Date().toISOString(),by:who(),lines});
+        const covered=j.lines.every(l=>e.wos.some(w=>(w.lines||[]).includes(l.key)));
+        if(covered&&!e.actionedAt){e.actionedAt=new Date().toISOString();e.actionedBy=who()}return true},ok2=>{if(ok2){build();render()}})})};
   rd.readAsDataURL(f);
 }
+function removeWO(k,path){const j=JOBS.find(x=>x.key===k);if(!j||!can('orders')||!confirm('Remove this works order file from the job?'))return;
+  ownSave('EMB job '+j.doc+' '+j.kind+' works order file removed',d=>{const e=d.jobs[k];if(!e)return false;if(e.wo&&e.wo.path===path)delete e.wo;e.wos=(e.wos||[]).filter(w=>w.path!==path);return true},ok=>{if(ok){build();render()}})}
+function unaction(k){const j=JOBS.find(x=>x.key===k);if(!j||!can('orders'))return;
+  ownSave('EMB job '+j.doc+' '+j.kind+' put back to needs action',d=>{const e=d.jobs[k];if(!e||!e.actionedAt)return false;e.unactionedAt=new Date().toISOString();e.unactionedBy=who();delete e.actionedAt;delete e.actionedBy;return true},ok=>{if(ok){build();render()}})}
+function actionJob(k){const j=JOBS.find(x=>x.key===k);if(!j||!can('orders'))return;
+  ownSave('EMB job '+j.doc+' '+j.kind+' actioned',d=>{const e=d.jobs[k]||(d.jobs[k]={co:j.co,so:j.doc,kind:j.kind,cust:j.cust});e.actionedAt=new Date().toISOString();e.actionedBy=who();return true},ok=>{if(ok){build();render()}})}
 const val=id=>{const e=document.getElementById(id);return e?e.value.trim():''};
 function who(){let w='';try{w=localStorage.getItem('emb_who')||''}catch(e){}if(!w){w=prompt('Your name (kept on this PC, shown on the marks you make):','')||'';try{localStorage.setItem('emb_who',w)}catch(e){}}return w}
 
@@ -553,7 +581,7 @@ function renderEmb(){
   return `<div class="tiles">${MACHINES.map(m=>`<div class="tile"><b>${list.filter(j=>j.machine===m.id).length}</b><span>${m.name}${byM[m.id]?' · '+Math.round(byM[m.id]/60*10)/10+' h':''}</span></div>`).join('')}</div>
   <div class="card"><h2>EMB queue <span class="r">${list.length} jobs · picked first, then by due date</span></h2>${filterBar()}
   <table><thead><tr><th>Order</th><th>Customer</th><th>Job</th><th>Garments</th><th>Picked</th><th>Due</th><th>Stitches</th><th class="num">Est. min</th><th>Machine</th><th></th></tr></thead><tbody>
-  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted clip" title="${esc(j.place)}">${esc(j.place)}</div>`:''}${j.woFile?`<div><a href="${esc(OWN_PAGES+j.woFile.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`:''}</td><td>${linesCell(j)}</td>
+  ${list.slice().sort((a,b)=>(a.pickState==='all'?0:1)-(b.pickState==='all'?0:1)||a.due-b.due).map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}</td><td>${kindPill(j.kind)}${logoCell(j)}${j.place?`<div class="muted clip" title="${esc(j.place)}">${esc(j.place)}</div>`:''}${j.wos.map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank" onclick="event.stopPropagation()">WO file ↗</a></div>`).join('')}</td><td>${linesCell(j)}</td>
    <td>${j.pickState==='all'?'<span class="pill p-pick">Picked</span>':j.pickState==='part'?'<span class="pill p-part">Part picked</span>':pill(j.status)}${j.shortLines&&j.pickState!=='all'?`<div class="muted">${j.shortLines} line${j.shortLines>1?'s':''} not on the shelf</div>`:''}</td>
    <td>${dueCell(j)}</td>
    <td onclick="event.stopPropagation()"><input type="number" min="0" style="width:80px;border:1px solid var(--line);border-radius:5px;padding:4px" value="${j.stitches||''}" ${w?'':'disabled'} onchange="setStitches('${esc(j.key)}',this.value)">${j.stitchesFrom==='memory'?'<div class="muted">from logo memory</div>':''}</td>
@@ -626,7 +654,7 @@ function wop(j){
   return `<div class="wop"><div class="hd"><div><h1>${j.kind==='EMB'?'Embroidery':'Transfer'} works order</h1><div>${j.co==='TIBARD'?'Tibard':'Oliver Harvey'} · printed ${fdt(new Date().toISOString())}</div></div><div class="k">${esc(j.src==='sage'?'SO '+j.doc:j.ref)}</div></div>
   <div class="kv"><div><b>Customer</b> ${esc(j.cust)}</div><div><b>Order ref</b> ${esc(j.ref)}</div><div><b>Order date</b> ${fdl(j.added)}</div><div><b>Due in EMB</b> ${fdl(j.due)}</div><div><b>Promised to customer</b> ${fdl(j.promised)}</div><div><b>Stitch count</b> ${j.stitches||'–'}</div><div><b>Thread colours</b> ${esc(j.colours||'–')}</div><div><b>Est. time</b> ${j.minutes?j.minutes+' min':'–'}</div></div>
   <div class="big">Logo: ${esc(j.logo||'see Sage text below')}</div><div class="big">Placement: ${esc(j.place||j.sageTxt.join(' / ')||'–')}</div>
-  ${j.woFile?`<p>Sales office works order file: ${esc(j.woFile.name)}</p>`:''}
+  ${j.wos.length?`<p>Sales office works order file${j.wos.length>1?'s':''}: ${j.wos.map(x=>esc(x.name)).join(', ')}</p>`:''}
   <table><thead><tr><th>Stock code</th><th>Description</th><th>Qty</th><th>Sage instruction</th><th>Picked</th></tr></thead><tbody>${j.lines.map(l=>`<tr><td><b>${esc(l.base||l.code)}</b>${l.base&&l.base!==l.code?'<br>→ '+esc(l.code):''}</td><td>${esc(l.desc)}</td><td style="text-align:right;font-size:16px"><b>${l.out}</b></td><td>${(l.txt||[]).map(esc).join('<br>')}</td><td>${l.picked?'✔':'☐'}</td></tr>`).join('')}</tbody></table>
   ${j.notes&&j.src==='sage'?`<p style="margin-top:8px"><b>Notes:</b> ${esc(j.notes)}</p>`:''}
   <div class="logo">${j.logoImg?`<img src="${esc(j.logoImg)}" alt="logo">`:'Logo image: attach or draw here'}</div>

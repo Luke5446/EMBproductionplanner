@@ -6,7 +6,7 @@
    "so": "875819",
    "kind": "EMB",
    "cust": "Brake Bros",
-   "unactionedAt": "2026-11-25T17:02:28.067Z",
+   "unactionedAt": "2026-11-25T17:03:42.194Z",
    "unactionedBy": "Admin",
    "wos": [
     {
@@ -29,9 +29,7 @@
       "TIB-SO-163767645"
      ]
     }
-   ],
-   "actionedAt": "2026-11-25T17:03:17.063Z",
-   "actionedBy": "Admin"
+   ]
   },
   "TIBARD|875819|Transfer": {
    "co": "TIBARD",
@@ -49,7 +47,7 @@
   }
  },
  "logos": [],
- "savedAt": "2026-11-25T17:03:17.063Z",
+ "savedAt": "2026-11-25T17:03:42.194Z",
  "users": [
   {
    "key": "emb",

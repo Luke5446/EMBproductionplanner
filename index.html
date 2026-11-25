@@ -57,6 +57,7 @@ td.num,th.num{text-align:right}
 .chk{width:17px;height:17px;vertical-align:middle;cursor:pointer}
 .warn{background:#fff8e6;border:1px solid #f1dfa8;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px}
 .err{background:#fdecea;border:1px solid #f3c1bc;border-radius:8px;padding:10px 14px;margin-top:12px;font-size:13px}
+.rm{color:var(--red);font-weight:700;text-decoration:none;margin-left:4px}
 .bin{font-family:Consolas,monospace;font-weight:700;background:#eef3fb;border-radius:4px;padding:1px 6px}
 .logoimg{max-height:70px;max-width:180px;border:1px solid var(--line);border-radius:6px;background:#fff;padding:3px}
 #print{display:none}
@@ -92,7 +93,7 @@ td.num,th.num{text-align:right}
    from the planner's style master.
    Reads: Order tracker data.json (raw Sage paste), Production Plan data.json + style master, Stock Planner data.json,
    Tibard-Cutlog warehouse.json, BinFinder stock.csv. Writes emb.json and wo/ files in this repo with the PC's token. */
-const VER='0.4';
+const VER='0.4.1';
 const SOP_URL='https://luke5446.github.io/SOPtracker/data.json';
 const PP_URL='https://luke5446.github.io/Tibard-Productionplan/data.json';
 const PP_HTML='https://luke5446.github.io/Tibard-Productionplan/index.html';
@@ -472,7 +473,7 @@ function jobDetail(j){
    <div class="field"><label>Notes for the EMB room</label><input id="f_notes" value="${esc(j.src==='sage'?j.notes:'')}" ${w?'':'disabled'}></div></div>
    ${j.src==='sage'&&w?`<div class="actions" style="margin-top:8px"><label><input type="checkbox" class="chk" id="f_same" ${j.lines.length>1?'':'checked'}> same works order for every garment</label><label class="btn btn-grey btn-sm" style="display:inline-block">Upload works order (all garments)<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this,'')"></label><span class="muted">or upload one per garment in the table</span></div>`:''}
    <table style="margin-top:10px"><thead><tr><th>Garment</th><th class="num">Ordered</th><th class="num">To go</th><th>Works order file</th><th>Bin</th><th>Stock</th><th>Picked</th><th>Sage text</th></tr></thead><tbody>
-   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${(l.wos||[]).map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank">${esc(x.name)}</a>${w?` <a href="#" onclick="event.preventDefault();removeWO('${esc(j.key)}','${esc(x.path)}')" title="remove">✕</a>`:''}</div>`).join('')}${j.src==='sage'&&w?`<label class="btn btn-grey btn-sm" style="display:inline-block;margin-top:3px">Upload<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this,'${esc(l.key)}')"></label>`:j.src==='sage'&&!(l.wos||[]).length?'<span class="muted">none</span>':''}</td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:''}</td><td>${l.onShelf?`<span class="pill p-stock">in stock${l.free!=null?' ('+l.free+' free)':''}</span>`:l.wait&&l.wait.length?`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:'<span class="muted">–</span>'}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
+   ${j.lines.map(l=>`<tr><td><span class="code">${esc(l.code)}</span><div class="desc">${esc(l.desc)}</div></td><td class="num">${l.qty}</td><td class="num"><b>${l.out}</b></td><td>${(l.wos||[]).map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank">${esc(x.name)}</a>${w?` <a href="#" class="rm" onclick="event.preventDefault();removeWO('${esc(j.key)}','${esc(x.path)}')" title="Remove this file from the job">✕</a>`:''}</div>`).join('')}${j.src==='sage'&&w?`<label class="btn btn-grey btn-sm" style="display:inline-block;margin-top:3px">Upload<input type="file" style="display:none" onchange="uploadWO('${esc(j.key)}',this,'${esc(l.key)}')"></label>`:j.src==='sage'&&!(l.wos||[]).length?'<span class="muted">none</span>':''}</td><td>${l.bin?`<span class="bin">${esc(l.bin)}</span>`:''}</td><td>${l.onShelf?`<span class="pill p-stock">in stock${l.free!=null?' ('+l.free+' free)':''}</span>`:l.wait&&l.wait.length?`<span class="pill ${l.wait.every(x=>x.t==='wo'||x.t==='smpend')?'p-wo':'p-short'}">${esc(waitText(l))}</span>${l.free!=null?`<div class="muted">${l.free} free</div>`:''}`:'<span class="muted">–</span>'}</td><td>${l.picked?`<span class="pill p-pick">${l.pickedQty||l.out} picked</span> <span class="muted">${fdt(l.pickedAt)}</span>`:'<span class="muted">–</span>'}</td><td>${(l.txt||[]).map(t=>`<div class="sagetxt">${esc(t)}</div>`).join('')}</td></tr>`).join('')}</tbody></table>
    <div class="actions">`;
   if(j.src==='sage'){
     if(w)h+=`<button class="btn btn-gold" onclick="saveJob('${esc(j.key)}')">Save</button>`;

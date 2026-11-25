@@ -10,17 +10,6 @@
    "unactionedBy": "Admin",
    "wos": [
     {
-     "lines": [
-      "TIB-SO-163767645",
-      "TIB-SO-163767648",
-      "TIB-SO-163767663"
-     ],
-     "path": "wo/TIB-875819-EMB-HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
-     "name": "HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
-     "at": "2026-11-25T16:52:24.527Z",
-     "by": "Admin"
-    },
-    {
      "path": "wo/TIB-875819-EMB-APPR15403-HHC_WO_E866114-1_Apron_APPR15403.xlsx",
      "name": "HHC_WO_E866114-1_Apron_APPR15403.xlsx",
      "at": "2026-11-25T17:03:17.063Z",
@@ -47,7 +36,7 @@
   }
  },
  "logos": [],
- "savedAt": "2026-11-25T17:03:42.194Z",
+ "savedAt": "2026-11-25T17:04:56.225Z",
  "users": [
   {
    "key": "emb",

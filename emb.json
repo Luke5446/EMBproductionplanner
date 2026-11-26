@@ -64,19 +64,7 @@
    "so": "872107",
    "kind": "EMB",
    "cust": "Pizza Express Restaurants Ltd",
-   "wos": [
-    {
-     "path": "wo/TIB-872107-EMB-HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
-     "name": "HHC_WO_E866114-3_Cap_HTBC64503-03.xlsx",
-     "at": "2026-11-26T09:06:45.184Z",
-     "by": "Admin",
-     "lines": [
-      "TIB-SO-162738851",
-      "TIB-SO-162738856",
-      "TIB-SO-162738863"
-     ]
-    }
-   ],
+   "wos": [],
    "unactionedAt": "2026-11-26T12:21:21.338Z",
    "unactionedBy": "Admin"
   },
@@ -98,7 +86,7 @@
    "stitchesAt": "2026-11-26T09:09:26.933Z"
   }
  ],
- "savedAt": "2026-11-26T12:21:21.338Z",
+ "savedAt": "2026-11-26T12:21:37.955Z",
  "users": [
   {
    "key": "emb",

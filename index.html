@@ -233,7 +233,7 @@ async function changePin(key){
   if(OWN.users.some(x=>x.pinHash===h&&x.key!==u.key)){alert('That PIN is already in use. Choose another.');return}
   ownSave('PIN changed for '+u.name,d=>{const x=d.users.find(y=>y.key===u.key);if(!x)return false;x.pinHash=h;return true},ok=>{if(ok){alert('PIN changed.');render()}});
 }
-const AREAS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['stock','Stock jobs'],['logos','Logos'],['settings','Settings'],['users','Users']];
+const AREAS=[['orders','Orders'],['pick','Pick list'],['emb','EMB queue'],['stock','Stock EMB'],['logos','Logos'],['settings','Settings'],['users','Users']];
 async function saveUser(key){
   const name=val('u_name'),edits=AREAS.map(a=>a[0]).filter(a=>{const e=document.getElementById('u_'+a);return e&&e.checked});
   if(!name){alert('Give the user a name.');return}
@@ -373,7 +373,7 @@ function build(){
       markers:[],sageTxt:[],own:OWN.jobs['wo|'+w.ref]||{},wo:w,style:st,logMachine:emb.machine||'',logDoneAt:emb.doneAt||'',printed:!!w.printed,embOnly:!!w.embOnly};
     JOBS.push(j);
   });
-  // stock jobs made on the Stock jobs tab (customer bought-in stock that gets EMB / a transfer before it is stock)
+  // stock jobs made on the Stock EMB tab (customer bought-in stock that gets EMB / a transfer before it is stock)
   OWN.manual.forEach(m=>{
     const key='man|'+m.id;
     const j={key,src:'manual',kind:m.kind||'EMB',co:m.co||'TIBARD',doc:m.ref||'',cust:m.cust||'',acct:'',ref:m.ref||'',user:m.by||'',promised:pd(m.due),added:pd(m.createdAt)||today(),due:pd(m.due)||addWorkDays(pd(m.createdAt)||today(),m.co==='TIBARD'?SET.leadTib:SET.leadOH),
@@ -439,7 +439,7 @@ const kindPill=k=>`<span class="pill ${k==='EMB'?'p-emb':'p-tr'}">${k}</span>`;
 const waitText=l=>(l.wait||[]).map(x=>x.t==='wo'?`WO ${esc(x.ref)}${x.due?' due '+fdl(pd(x.due)):''}`:x.t==='smpend'?'special make, no WO yet':x.t==='po'?`PO ${esc(x.ref)}${x.sup?' '+esc(x.sup):''}${x.date?' due '+fdl(pd(x.date)):''}`:x.t==='cont'?`container ${esc(x.ref)}${x.date?' '+fdl(pd(x.date)):''}`:x.t==='hold'?'order on hold':'nothing on order').join(', ');
 
 /* ── render ─────────────────────────────────────────────────────────────── */
-const TABS=[['orders','Orders'],['actioned','Actioned'],['pick','Pick list'],['emb','EMB queue'],['stock','Stock jobs'],['done','Done'],['logos','Logos'],['settings','Settings']];
+const TABS=[['orders','Orders'],['actioned','Actioned'],['stock','Stock EMB'],['pick','Pick list'],['emb','EMB queue'],['done','Done'],['logos','Logos'],['settings','Settings']];
 function render(){
   const live=JOBS.filter(j=>j.status!=='done');
   const counts={orders:live.filter(j=>j.src==='sage'&&!j.actioned).length,pick:live.filter(j=>j.status==='ready'&&j.actioned).length,emb:live.filter(j=>j.actioned&&(j.promiseChanged||(!j.machine&&j.pickState==='all'))).length};
@@ -668,7 +668,7 @@ function renderStock(){
   const w=can('stock');
   const jobs=applyFilter(JOBS.filter(j=>j.src==='manual'));
   const codes=SOP.stk.filter(x=>x.co===NEW_STOCK.co&&!x.missing&&!/^BULK/.test(x.code));
-  let h=`<div class="card"><h2>Stock jobs <span class="r">customer bought-in stock that gets embroidery or a transfer before it is stock held</span></h2>`;
+  let h=`<div class="card"><h2>Stock EMB <span class="r">customer bought-in stock that gets embroidery or a transfer before it is stock held</span></h2>`;
   if(w)h+=`<div class="detail"><div class="grid">
     <div class="field"><label>Company</label><select id="st_co" onchange="NEW_STOCK.co=this.value;render()"><option value="TIBARD" ${NEW_STOCK.co==='TIBARD'?'selected':''}>Tibard</option><option value="OLIVER HARVEY" ${NEW_STOCK.co==='OLIVER HARVEY'?'selected':''}>Oliver Harvey</option></select></div>
     <div class="field"><label>Job</label><select id="st_kind" onchange="NEW_STOCK.kind=this.value"><option ${NEW_STOCK.kind==='EMB'?'selected':''}>EMB</option><option ${NEW_STOCK.kind==='Transfer'?'selected':''}>Transfer</option></select></div>
@@ -680,7 +680,7 @@ function renderStock(){
     <div class="field"><label>&nbsp;</label><button class="btn btn-grey" onclick="stockAddLine()">Add line</button></div></div>
     <table style="margin-top:10px"><thead><tr><th>Code</th><th>Description</th><th class="num">Qty</th><th>Free stock</th><th>Note</th><th></th></tr></thead><tbody>${NEW_STOCK.lines.map((l,i)=>`<tr><td><span class="code">${esc(l.code)}</span></td><td>${esc(l.desc)}</td><td class="num">${l.qty}</td><td>${l.free==null?'–':l.free}</td><td>${esc(l.note||'')}</td><td><a href="#" class="rm" onclick="event.preventDefault();NEW_STOCK.lines.splice(${i},1);render()">✕</a></td></tr>`).join('')||'<tr><td colspan="6" class="msg">No lines yet. A code typed that is not in the Sage list is refused, so there are no typos.</td></tr>'}</tbody></table>
     <div class="actions"><button class="btn btn-gold" onclick="stockCreate()" ${NEW_STOCK.lines.length?'':'disabled'}>Create job</button><span class="muted">The job is actioned straight away: it goes to the pick list (stock from Sage) and the EMB queue. Upload its works order below once made.</span></div></div>`;
-  else h+=`<div class="msg">Sign in as the stock / IT user to create jobs.</div>`;
+  else h+=`<div class="msg">Sign in as the stock / IT user (Stock EMB area) to create jobs.</div>`;
   h+=`<table><thead><tr><th>Job</th><th>Customer · ref</th><th>Kind</th><th>Lines</th><th>Works order</th><th>Made</th><th>Status</th><th></th></tr></thead><tbody>
   ${jobs.map(j=>jobRow(j,j=>`<td>${soCell(j)}</td><td>${esc(j.cust)}<div class="muted">${esc(j.ref)}</div></td><td>${kindPill(j.kind)}</td><td>${linesCell(j)}</td><td>${j.wos.map(x=>`<div><a href="${esc(OWN_PAGES+x.path)}" target="_blank" onclick="event.stopPropagation()">${esc(x.name)} ↗</a></div>`).join('')||'<span class="muted">none yet</span>'}</td><td>${fdt(j.manual.createdAt)}<div class="muted">${esc(j.manual.by||'')}</div></td><td>${pill(j.status)}</td><td onclick="event.stopPropagation()">${w&&!j.doneAt?`<button class="btn btn-grey btn-sm" onclick="stockRemove('${esc(j.manual.id)}')">Remove</button>`:''}</td>`,8)).join('')||'<tr><td colspan="8" class="msg">No stock jobs yet.</td></tr>'}</tbody></table></div>`;
   return h;

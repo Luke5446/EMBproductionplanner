@@ -79,10 +79,26 @@
    ],
    "actionedAt": "2026-11-26T09:06:45.184Z",
    "actionedBy": "Admin"
+  },
+  "wo|WO-1940": {
+   "co": "TIBARD",
+   "so": "",
+   "kind": "EMB",
+   "cust": "Ego Restaurants",
+   "stitches": 2000
   }
  },
- "logos": [],
- "savedAt": "2026-11-26T09:06:45.184Z",
+ "logos": [
+  {
+   "name": "Ego Restaurants logo",
+   "cust": "Ego Restaurants",
+   "place": "Ego Mediterranean logo, 80 mm wide, embroidered to the right sleeve as worn in blue and yellow (navy lettering, gold dots), as on the Tibard embroidery form. The stock white short sleeve jacket (CICJ0193) is picked from stock and embroidered after make-up; nothing is cut or made on this works order.",
+   "at": "2026-11-26T09:09:26.933Z",
+   "stitches": 2000,
+   "stitchesAt": "2026-11-26T09:09:26.933Z"
+  }
+ ],
+ "savedAt": "2026-11-26T09:09:26.933Z",
  "users": [
   {
    "key": "emb",
